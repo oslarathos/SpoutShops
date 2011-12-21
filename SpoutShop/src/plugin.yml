@@ -1,0 +1,28 @@
+name: SpoutShops
+author: Richard Lang
+email: langricr@bell.net
+version: 1.0
+main: org.ss.SpoutShopPlugin
+depend: [Vault]
+
+permissions:
+    spoutshops.*:
+        default: op
+        description: Gives all SpoutShops permissions.
+        children:
+            spoutshops.admin: true
+            spoutshops.create: true
+            spoutshops.destroy: true
+            spoutshops.interact: true
+    spoutshops.admin:
+        default: op
+        description: Permits the modification and destruction of others' shops.
+    spoutshops.create:
+        default: true
+        description: Permits the creations of shops.
+    spoutshops.interact:
+        default: true
+        description: Allows players to open the spoutshop interface.
+    spoutshops.destroy:
+        default: true
+        description: Permits the destruction of owned shops.
