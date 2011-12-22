@@ -70,4 +70,8 @@ public class Coordinate
 
 		return false;
 	}
+
+	public String toString() {
+		return "Coordinate[x:" + x + ",z:" + y + ",z:" + z + "]";
+	}
 }

@@ -31,7 +31,6 @@ public class ShopVaultPopup
 		}
 
 		if ( player.hasPermission( "spoutshops.admin" ) ) {
-
 			GenericLabel lbl_setfunds = new GenericLabel( "Set\nFunds" );
 			lbl_setfunds.setAnchor( WidgetAnchor.TOP_LEFT );
 			lbl_setfunds.setX( 70 );
