@@ -1,16 +1,25 @@
 
 package org.ss;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.inventory.SpoutItemStack;
+import org.getspout.spoutapi.inventory.SpoutShapedRecipe;
+import org.getspout.spoutapi.material.MaterialData;
 import org.ss.listeners.SSBlockListener;
 import org.ss.listeners.SSPlayerListener;
 import org.ss.listeners.SSScreenListener;
+import org.ss.spout.ShopCounter;
 
 public class SpoutShopPlugin
 		extends JavaPlugin {
@@ -35,7 +44,11 @@ public class SpoutShopPlugin
 
 	@Override
 	public void onDisable() {
-		SSBlockListener.getInstance().saveAllShops();
+		try {
+			SSBlockListener.getInstance().saveAllShops();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 
 		log( Level.INFO, "Version " + getDescription().getVersion() + " disabled." );
 	}
@@ -49,6 +62,14 @@ public class SpoutShopPlugin
 
 		// Reading the configuration
 		try {
+			File config_file = new File( getDataFolder(), "config.ini" );
+
+			if ( config_file.exists() ) {
+				getConfig().load( config_file );
+			} else {
+				getConfig().set( "shop-counter-recipe", false );
+				getConfig().save( config_file );
+			}
 
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -57,7 +78,11 @@ public class SpoutShopPlugin
 		}
 
 		// Loading up shops.
-		SSBlockListener.getInstance().reloadAllShops();
+		try {
+			SSBlockListener.getInstance().reloadAllShops();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
 
 		// Registering events
 		SSBlockListener.registerEvents( this );
@@ -74,6 +99,21 @@ public class SpoutShopPlugin
 			log( Level.SEVERE, "Vault economy not found, aborting." );
 			getPluginLoader().disablePlugin( this );
 			return;
+		}
+
+		// registering recipes
+
+		if ( getConfig().getBoolean( "shop-counter-recipe" ) ) {
+			ShopCounter shop_block = new ShopCounter( this );
+			ItemStack shop_block_drop = new ItemStack( Material.BOOK, 1 );
+			shop_block.setItemDrop( shop_block_drop );
+
+			SpoutShapedRecipe recipe = new SpoutShapedRecipe( new SpoutItemStack( shop_block, 1 ) );
+			recipe.shape( "wpw", "www", "sss" );
+			recipe.setIngredient( 'w', MaterialData.wood );
+			recipe.setIngredient( 'p', MaterialData.paper );
+			recipe.setIngredient( 's', MaterialData.stone );
+			SpoutManager.getMaterialManager().registerSpoutRecipe( recipe );
 		}
 
 		log( "Version " + getDescription().getVersion() + " loaded." );

@@ -73,4 +73,5 @@ public class Shop
 	public boolean hasInfiniteWealth() {
 		return shop_vault == -1;
 	}
+
 }

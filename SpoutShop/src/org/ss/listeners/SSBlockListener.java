@@ -4,28 +4,33 @@ package org.ss.listeners;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
+import org.getspout.spoutapi.block.SpoutBlock;
 import org.ss.SpoutShopPlugin;
 import org.ss.serial.Coordinate;
 import org.ss.shop.Shop;
 import org.ss.shop.ShopEntry;
+import org.ss.spout.ShopCounter;
 
 public class SSBlockListener
 		extends BlockListener {
@@ -40,9 +45,12 @@ public class SSBlockListener
 
 		manager.registerEvent( Type.SIGN_CHANGE, instance, Priority.Normal, plugin );
 		manager.registerEvent( Type.BLOCK_BREAK, instance, Priority.Normal, plugin );
+		manager.registerEvent( Type.BLOCK_PLACE, instance, Priority.Normal, plugin );
 	}
 
-	private HashMap< Coordinate, Shop > block_based_shops = new HashMap< Coordinate, Shop >();
+	private HashMap< Coordinate, Shop > shop_coord_roster = new HashMap< Coordinate, Shop >();
+	private HashMap< UUID, Shop > shop_uuid_roster = new HashMap< UUID, Shop >();
+
 	private File folder = new File( SpoutShopPlugin.getInstance().getDataFolder(), "block_shops" );
 
 	private SSBlockListener() {
@@ -50,80 +58,115 @@ public class SSBlockListener
 			folder.mkdir();
 	}
 
-	public void reloadAllShops() {
-		block_based_shops.clear();
+	public void reloadAllShops() throws Exception {
+		shop_coord_roster.clear();
 
 		for ( File file : folder.listFiles() ) {
-			try {
-				FileInputStream fis = new FileInputStream( file );
-				ObjectInputStream ois = new ObjectInputStream( fis );
+			if ( file.getName().equalsIgnoreCase( "shop.index" ) )
+				continue;
 
-				Shop shop = ( Shop ) ois.readObject();
-				Coordinate coord = ( Coordinate ) ois.readObject();
+			FileInputStream fis = new FileInputStream( file );
+			ObjectInputStream ois = new ObjectInputStream( fis );
 
-				ois.close();
-				fis.close();
+			Shop shop = ( Shop ) ois.readObject();
 
-				block_based_shops.put( coord, shop );
-			} catch ( Exception e ) {
-				e.printStackTrace();
-			}
+			ois.close();
+			fis.close();
+
+			shop_uuid_roster.put( shop.shop_uuid, shop );
 		}
+
+		File file = new File( folder, "shop.index" );
+
+		if ( !file.exists() )
+			return;
+
+		FileInputStream fis = new FileInputStream( file );
+		ObjectInputStream ois = new ObjectInputStream( fis );
+
+		Integer index_size = ( Integer ) ois.readObject();
+		for ( int index = 0; index < index_size; index++ ) {
+			Coordinate coord = ( Coordinate ) ois.readObject();
+			UUID shop_uuid = ( UUID ) ois.readObject();
+
+			if ( !shop_uuid_roster.containsKey( shop_uuid ) )
+				throw new Exception( "UUID in shop index does not match a shop." );
+
+			shop_coord_roster.put( coord, shop_uuid_roster.get( shop_uuid ) );
+		}
+
+		SpoutShopPlugin.log( Level.INFO,
+				"Loaded " + shop_uuid_roster.size() + " shops across " + shop_coord_roster.size() + " blocks." );
 	}
 
-	public void saveAllShops() {
+	public void saveAllShops() throws IOException {
+		ArrayList< Shop > saved_shops = new ArrayList< Shop >();
+
+		File index = new File( folder, "shop.index" );
+
+		if ( !index.exists() || index.delete() )
+			index.createNewFile();
+
+		FileOutputStream index_fos = new FileOutputStream( index );
+		ObjectOutputStream index_oos = new ObjectOutputStream( index_fos );
+
+		index_oos.writeObject( shop_coord_roster.size() );
+
 		int count = 0;
-		for ( Coordinate coord : block_based_shops.keySet() ) {
-			Shop shop = block_based_shops.get( coord );
+		for ( Coordinate coord : shop_coord_roster.keySet() ) {
+			index_oos.writeObject( coord );
 
-			try {
-				File file = new File( folder, shop.shop_uuid.toString() );
+			Shop shop = shop_coord_roster.get( coord );
+			index_oos.writeObject( shop.shop_uuid );
 
-				if ( !file.exists() || file.delete() )
-					file.createNewFile();
+			if ( saved_shops.contains( shop ) )
+				continue;
+			else
+				saved_shops.add( shop );
 
-				FileOutputStream fos = new FileOutputStream( file );
-				ObjectOutputStream oos = new ObjectOutputStream( fos );
+			File file = new File( folder, shop.shop_uuid.toString() );
 
-				oos.writeObject( shop );
-				oos.writeObject( coord );
+			if ( !file.exists() || file.delete() )
+				file.createNewFile();
 
-				oos.flush();
-				oos.close();
+			FileOutputStream fos = new FileOutputStream( file );
+			ObjectOutputStream oos = new ObjectOutputStream( fos );
 
-				fos.flush();
-				fos.close();
+			oos.writeObject( shop );
 
-				count++;
-			} catch ( Exception e ) {
-				e.printStackTrace();
-			}
+			oos.flush();
+			oos.close();
+
+			fos.flush();
+			fos.close();
+
+			count++;
 		}
 
-		SpoutShopPlugin.log( Level.INFO, "Saved " + count + " of " + block_based_shops.size() + " block-based shops." );
-	}
+		index_oos.flush();
+		index_oos.close();
 
-	public Shop getShop( Block block ) {
-		return block_based_shops.get( block );
-	}
+		index_fos.flush();
+		index_fos.close();
 
-	public Shop getShop( Location location ) {
-		return block_based_shops.get( location );
+		SpoutShopPlugin.log( Level.INFO, "Saved " + count + " shop(s) in " + shop_coord_roster.size() + " blocks." );
 	}
 
 	public Shop getShop( Coordinate coord ) {
-		return block_based_shops.get( coord );
+		return shop_coord_roster.get( coord );
 	}
 
 	public void onBlockBreak( BlockBreakEvent event ) {
-		Shop shop = block_based_shops.get( event.getBlock() );
+		Coordinate coord = new Coordinate( event.getBlock() );
+
+		Shop shop = shop_coord_roster.get( coord );
 
 		if ( shop == null )
 			return;
 
 		Player player = event.getPlayer();
 
-		if ( !player.hasPermission( "spoutshops.delete" ) || !player.hasPermission( "spoutshops.admin" ) ) {
+		if ( !player.hasPermission( "spoutshops.destroy" ) || !player.hasPermission( "spoutshops.admin" ) ) {
 			player.sendMessage( "You do not have permission to destroy shops." );
 			event.setCancelled( true );
 			return;
@@ -135,30 +178,110 @@ public class SSBlockListener
 			return;
 		}
 
-		// Deleting the shop's save file.
-		File shop_file = new File( folder, shop.shop_uuid.toString() );
-		shop_file.delete();
-
 		// Removing the shop from the roster.
-		block_based_shops.remove( event.getBlock() );
+		shop_coord_roster.remove( coord );
 
-		// Dropping the shop's inventory.
-		for ( ShopEntry entry : shop.shop_entries ) {
-			if ( entry.hasInfiniteStock() )
-				continue;
+		if ( !shop_coord_roster.containsValue( shop ) ) {
+			shop_uuid_roster.remove( shop.shop_uuid );
 
-			ItemStack stack = entry.createItemStack();
-			stack.setAmount( entry.units_in_stock );
+			// Dropping the shop's inventory.
+			for ( ShopEntry entry : shop.shop_entries ) {
+				if ( entry.hasInfiniteStock() )
+					continue;
 
-			event.getBlock().getWorld().dropItem( event.getBlock().getLocation().add( 0.5, 0.5, 0.5 ), stack );
+				ItemStack stack = entry.createItemStack();
+				stack.setAmount( entry.units_in_stock );
+
+				event.getBlock().getWorld().dropItem( event.getBlock().getLocation().add( 0.5, 0.5, 0.5 ), stack );
+			}
+
+			// Granting the funds to the shop destroyer.
+			if ( !shop.hasInfiniteWealth() ) {
+				if ( shop.shop_vault > 0 ) {
+					Economy econ = SpoutShopPlugin.getInstance().getVaultEconomy();
+
+					econ.depositPlayer( player.getName(), shop.shop_vault );
+					player.sendMessage( ChatColor.GREEN + "[SpoutShops] " + ChatColor.WHITE + "$" + shop.shop_vault
+							+ " deposited." );
+				}
+			}
+
+			// Deleting the shop's save file.
+			File shop_file = new File( folder, shop.shop_uuid.toString() );
+			shop_file.delete();
+
 		}
+	}
 
-		// Granting the funds to the shop destroyer.
-		if ( !shop.hasInfiniteWealth() ) {
-			Economy econ = SpoutShopPlugin.getInstance().getVaultEconomy();
-			econ.depositPlayer( player.getName(), shop.shop_vault );
-			player.sendMessage( ChatColor.GREEN + "[SpoutShops] " + ChatColor.WHITE + "$" + shop.shop_vault
-					+ " has been desposited into your economy account" );
+	public void onBlockPlace( BlockPlaceEvent event ) {
+		if ( event.getBlock() instanceof SpoutBlock ) {
+			SpoutBlock block = ( SpoutBlock ) event.getBlock();
+
+			if ( block.isCustomBlock() ) {
+				if ( block.getCustomBlock() instanceof ShopCounter ) {
+					Player player = event.getPlayer();
+					ArrayList< Shop > nearby_shops = new ArrayList< Shop >();
+
+					for ( int x = -1; x <= 1; x++ ) {
+						for ( int z = -1; z <= 1; z++ ) {
+							for ( int y = -1; y <= 1; y++ ) {
+								if ( x == 0 && y == 0 && z == 0 )
+									continue;
+
+								Block relative = block.getRelative( x, y, z );
+
+								SpoutBlock sb = ( SpoutBlock ) relative;
+
+								if ( !sb.isCustomBlock() )
+									continue;
+								else {
+									if ( !( sb.getCustomBlock() instanceof ShopCounter ) )
+										continue;
+								}
+
+								Coordinate coord = new Coordinate( relative );
+
+								if ( shop_coord_roster.containsKey( coord ) ) {
+									Shop shop = shop_coord_roster.get( coord );
+
+									if ( !nearby_shops.contains( shop ) )
+										nearby_shops.add( shop );
+								}
+							}
+						}
+					}
+
+					if ( nearby_shops.size() > 1 ) {
+						player.sendMessage( ChatColor.GREEN + "[SpoutShops] " + ChatColor.WHITE
+								+ "Conflicting shops surrounding this block." );
+						event.setCancelled( true );
+						return;
+					}
+
+					Shop shop;
+
+					if ( nearby_shops.size() == 1 ) {
+						shop = nearby_shops.get( 0 );
+
+						if ( !shop.isManager( player ) ) {
+							player.sendMessage( "You are not an owner and cannot extend that shop." );
+							event.setCancelled( true );
+							return;
+						}
+					} else {
+						if ( !player.hasPermission( "spoutshops.create.block" ) ) {
+							player.sendMessage( "You do not have permission to create a shop this way." );
+							event.setCancelled( true );
+							return;
+						}
+
+						shop = new Shop( event.getPlayer().getName() );
+					}
+
+					Coordinate coord = new Coordinate( event.getBlock() );
+					shop_coord_roster.put( coord, shop );
+				}
+			}
 		}
 	}
 
@@ -171,14 +294,14 @@ public class SSBlockListener
 		Player player = event.getPlayer();
 
 		if ( !player.hasPermission( "spoutshops.create.sign" ) ) {
-			player.sendMessage( "You do not have permission to create a shop." );
+			player.sendMessage( "You do not have permission to create a shop this way." );
 			event.setCancelled( true );
 			return;
 		}
 
 		Coordinate coord = new Coordinate( event.getBlock() );
 		Shop shop = new Shop( event.getPlayer().getName() );
-		block_based_shops.put( coord, shop );
+		shop_coord_roster.put( coord, shop );
 		System.out.println( coord.toString() );
 		player.sendMessage( "Your shop has been created, right click the sign to access it." );
 	}

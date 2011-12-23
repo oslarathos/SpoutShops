@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/Workspace/libraries/ebean-2.7.3/ebean-2.7.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bukkit"/>
+	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/SpoutPluginAPI.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JDK 1.6.0_26"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
