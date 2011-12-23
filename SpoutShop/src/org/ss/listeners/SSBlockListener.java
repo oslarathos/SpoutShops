@@ -42,7 +42,7 @@ public class SSBlockListener
 		manager.registerEvent( Type.BLOCK_BREAK, instance, Priority.Normal, plugin );
 	}
 
-	private HashMap< Coordinate, Shop > block_based_shops = new HashMap<>();
+	private HashMap< Coordinate, Shop > block_based_shops = new HashMap< Coordinate, Shop >();
 	private File folder = new File( SpoutShopPlugin.getInstance().getDataFolder(), "block_shops" );
 
 	private SSBlockListener() {

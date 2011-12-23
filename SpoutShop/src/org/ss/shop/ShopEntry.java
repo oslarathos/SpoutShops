@@ -16,7 +16,7 @@ public class ShopEntry
 
 	public Material unit_material;
 	public byte unit_data;
-	public HashMap< Integer, Integer > unit_enchantments = new HashMap<>();;
+	public HashMap< Integer, Integer > unit_enchantments = new HashMap< Integer, Integer >();;
 	public double unit_durability;
 
 	public int units_in_stock;

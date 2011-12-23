@@ -22,7 +22,7 @@ public enum SSEnchantment {
 	DURABILITY( 34, "Durability" ),
 	FORTUNE( 35, "Fortune" );
 
-	private static HashMap< Integer, SSEnchantment > lookup = new HashMap<>();
+	private static HashMap< Integer, SSEnchantment > lookup = new HashMap< Integer, SSEnchantment >();
 
 	static {
 		for ( SSEnchantment enchant : values() )

@@ -13,8 +13,8 @@ public class Shop
 	private static final long serialVersionUID = 1L;
 
 	public final UUID shop_uuid = UUID.randomUUID();
-	public final ArrayList< ShopEntry > shop_entries = new ArrayList<>();
-	public final ArrayList< String > owners = new ArrayList<>();
+	public final ArrayList< ShopEntry > shop_entries = new ArrayList< ShopEntry >();
+	public final ArrayList< String > owners = new ArrayList< String >();
 	public String shop_name = "Shop";
 	public String shop_motd = "A shop";
 	public double shop_vault = 0;

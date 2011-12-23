@@ -34,10 +34,10 @@ public class ShopSellPopup
 	private GenericTextField txt_search = new GenericTextField();
 	private GenericButton btn_search = new GenericButton( "Search" );
 
-	private ArrayList< ShopEntry > shop_entries = new ArrayList<>();
-	private ArrayList< GenericTextField > sell_amounts = new ArrayList<>();
-	private ArrayList< GenericButton > sell_buttons = new ArrayList<>();
-	private ArrayList< GenericLabel > sell_avail = new ArrayList<>();
+	private ArrayList< ShopEntry > shop_entries = new ArrayList< ShopEntry >();
+	private ArrayList< GenericTextField > sell_amounts = new ArrayList< GenericTextField >();
+	private ArrayList< GenericButton > sell_buttons = new ArrayList< GenericButton >();
+	private ArrayList< GenericLabel > sell_avail = new ArrayList< GenericLabel >();
 
 	public ShopSellPopup( SpoutPlayer player, Shop shop ) {
 		this( player, shop, 0, null );
@@ -145,7 +145,7 @@ public class ShopSellPopup
 
 			if ( entry.unit_enchantments.size() != 0 ) {
 				StringBuilder builder = new StringBuilder();
-				HashMap< Integer, Integer > enchantments = new HashMap<>();
+				HashMap< Integer, Integer > enchantments = new HashMap< Integer, Integer >();
 
 				for ( Integer eid : enchantments.keySet() ) {
 					if ( builder.length() != 0 )

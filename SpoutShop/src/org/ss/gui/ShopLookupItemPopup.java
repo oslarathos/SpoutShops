@@ -31,8 +31,8 @@ public class ShopLookupItemPopup
 	private GenericTextField txt_search = new GenericTextField();
 	private GenericButton btn_search = new GenericButton( "Search" );
 
-	private ArrayList< ShopEntry > shop_entries = new ArrayList<>();
-	private ArrayList< GenericButton > modify_entry_buttons = new ArrayList<>();
+	private ArrayList< ShopEntry > shop_entries = new ArrayList< ShopEntry >();
+	private ArrayList< GenericButton > modify_entry_buttons = new ArrayList< GenericButton >();
 
 	public ShopLookupItemPopup( SpoutPlayer player, Shop shop ) {
 		this( player, shop, 0 );
@@ -144,7 +144,7 @@ public class ShopLookupItemPopup
 
 			if ( entry.unit_enchantments.size() != 0 ) {
 				StringBuilder builder = new StringBuilder();
-				HashMap< Integer, Integer > enchantments = new HashMap<>();
+				HashMap< Integer, Integer > enchantments = new HashMap< Integer, Integer >();
 
 				for ( Integer eid : enchantments.keySet() ) {
 					if ( builder.length() != 0 )

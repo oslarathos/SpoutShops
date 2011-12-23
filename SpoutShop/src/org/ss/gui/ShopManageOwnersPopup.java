@@ -21,8 +21,8 @@ public class ShopManageOwnersPopup
 	private int scan_index;
 	private String search;
 
-	private ArrayList< String > managers = new ArrayList<>();
-	private ArrayList< GenericButton > remove_buttons = new ArrayList<>();
+	private ArrayList< String > managers = new ArrayList< String >();
+	private ArrayList< GenericButton > remove_buttons = new ArrayList< GenericButton >();
 
 	private GenericButton btn_prev = new GenericButton( "Previous" );
 	private GenericButton btn_next = new GenericButton( "Next" );
