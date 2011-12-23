@@ -75,7 +75,7 @@ public class ShopEntry
 		if ( o instanceof ItemStack ) {
 			SpoutItemStack sis = new SpoutItemStack( ( ItemStack ) o );
 
-			if ( unit_name.equals( sis.getMaterial().getNotchianName() ) )
+			if ( !unit_name.equals( sis.getMaterial().getNotchianName() ) )
 				return false;
 
 			if ( unit_durability != sis.getDurability() )

@@ -27,19 +27,14 @@ public class Shop
 	public void add( ItemStack stack ) {
 		SpoutItemStack sis = new SpoutItemStack( stack );
 
-		System.out.print( sis.getMaterial().getNotchianName() + ": " );
-
 		for ( ShopEntry entry : shop_entries ) {
 			if ( entry.equals( stack ) ) {
 				if ( !entry.hasInfiniteStock() )
 					entry.units_in_stock += sis.getAmount();
 
-				System.out.println( "Added" );
 				return;
 			}
 		}
-
-		System.out.println( "Created" );
 
 		ShopEntry entry = new ShopEntry( sis );
 		shop_entries.add( entry );
