@@ -2,13 +2,13 @@
 package org.ss.gui;
 
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.gui.Button;
 import org.getspout.spoutapi.gui.GenericButton;
 import org.getspout.spoutapi.gui.GenericTextField;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
+import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.ss.shop.Shop;
 
@@ -71,14 +71,17 @@ public class ShopAddItemPopup
 				Integer amount = Integer.parseInt( txt_amount.getText() );
 				String search = txt_itemname.getText();
 
-				PlayerInventory inventory = player.getInventory();
+				SpoutPlayerInventory inventory = ( SpoutPlayerInventory ) player.getInventory();
 
 				int count = 0;
 				for ( ItemStack stack : inventory.getContents() ) {
 					if ( stack == null || stack.getAmount() == 0 )
 						continue;
 
-					if ( stack.getType().name().toUpperCase().replaceAll( "_", " " ).contains( search.toUpperCase() ) ) {
+					SpoutItemStack sis = new SpoutItemStack( stack );
+					String compare_term = sis.getMaterial().getNotchianName();
+
+					if ( compare_term.toUpperCase().replaceAll( "_", " " ).contains( search.toUpperCase() ) ) {
 						if ( stack.getAmount() <= amount ) {
 							inventory.remove( stack );
 							amount -= stack.getAmount();
@@ -98,7 +101,7 @@ public class ShopAddItemPopup
 		}
 
 		if ( button.equals( btn_dump ) ) {
-			PlayerInventory inventory = player.getInventory();
+			SpoutPlayerInventory inventory = ( SpoutPlayerInventory ) player.getInventory();
 
 			if ( inventory.getSize() == 0 )
 				return;
@@ -107,12 +110,9 @@ public class ShopAddItemPopup
 				if ( stack == null || stack.getAmount() == 0 )
 					continue;
 
-				if ( stack instanceof SpoutItemStack ) {
-					if ( ( ( SpoutItemStack ) stack ).isCustomItem() )
-						continue;
-				}
+				SpoutItemStack sis = new SpoutItemStack( stack );
 
-				inventory.remove( stack );
+				inventory.remove( sis );
 				shop.add( stack );
 			}
 

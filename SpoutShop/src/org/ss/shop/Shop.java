@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.getspout.spoutapi.inventory.SpoutItemStack;
 
 public class Shop
 		implements Serializable {
@@ -24,21 +25,24 @@ public class Shop
 	}
 
 	public void add( ItemStack stack ) {
-		if ( stack.getEnchantments().size() != 0 || stack.getMaxStackSize() == 1 ) {
-			ShopEntry entry = new ShopEntry( stack );
-			entry.units_in_stock = stack.getAmount();
-		} else {
-			for ( ShopEntry entry : shop_entries ) {
-				if ( entry.equals( stack ) ) {
-					if ( !entry.hasInfiniteStock() )
-						entry.units_in_stock += stack.getAmount();
-					return;
-				}
-			}
+		SpoutItemStack sis = new SpoutItemStack( stack );
 
-			ShopEntry entry = new ShopEntry( stack );
-			shop_entries.add( entry );
+		System.out.print( sis.getMaterial().getNotchianName() + ": " );
+
+		for ( ShopEntry entry : shop_entries ) {
+			if ( entry.equals( stack ) ) {
+				if ( !entry.hasInfiniteStock() )
+					entry.units_in_stock += sis.getAmount();
+
+				System.out.println( "Added" );
+				return;
+			}
 		}
+
+		System.out.println( "Created" );
+
+		ShopEntry entry = new ShopEntry( sis );
+		shop_entries.add( entry );
 	}
 
 	public ItemStack remove( ItemStack stack ) {

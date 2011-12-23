@@ -5,19 +5,19 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
+import org.getspout.spoutapi.inventory.SpoutItemStack;
+import org.getspout.spoutapi.material.MaterialData;
 
 public class ShopEntry
 		implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public Material unit_material;
+	public String unit_name;
 	public byte unit_data;
 	public HashMap< Integer, Integer > unit_enchantments = new HashMap< Integer, Integer >();;
-	public double unit_durability;
+	public short unit_durability;
 
 	public int units_in_stock;
 	public int units_wanted;
@@ -25,12 +25,11 @@ public class ShopEntry
 	public double cost_to_sell_unit = -1;
 
 	public ShopEntry( ItemStack stack ) {
-		unit_material = stack.getType();
-		unit_durability = stack.getDurability();
+		SpoutItemStack sis = new SpoutItemStack( stack );
 
-		MaterialData material_data = stack.getData();
-		if ( material_data != null )
-			unit_data = material_data.getData();
+		unit_name = sis.getMaterial().getNotchianName();
+		unit_durability = stack.getDurability();
+		unit_data = stack.getData().getData();
 
 		Map< Enchantment, Integer > enchantments = stack.getEnchantments();
 		for ( Enchantment encha : enchantments.keySet() ) {
@@ -40,22 +39,22 @@ public class ShopEntry
 		units_in_stock = stack.getAmount();
 	}
 
-	public ItemStack createItemStack() {
-		ItemStack stack = new ItemStack( unit_material, 1 );
-		stack.setData( new MaterialData( unit_material, unit_data ) );
+	public SpoutItemStack createItemStack() {
+		SpoutItemStack sis = new SpoutItemStack( MaterialData.getMaterial( unit_name ) );
+		sis.setDurability( unit_durability );
 
 		for ( Integer eid : unit_enchantments.keySet() ) {
-			stack.addEnchantment( Enchantment.getById( eid ), unit_enchantments.get( eid ) );
+			sis.addEnchantment( Enchantment.getById( eid ), unit_enchantments.get( eid ) );
 		}
 
-		return stack;
+		return sis;
 	}
 
 	public boolean matchesString( String criteria ) {
 		if ( criteria == null )
 			return false;
 
-		return unit_material.name().toUpperCase().replaceAll( "_", " " ).contains( criteria.toUpperCase() );
+		return unit_name.equalsIgnoreCase( criteria );
 	}
 
 	public boolean hasInfiniteStock() {
@@ -74,16 +73,31 @@ public class ShopEntry
 			return true;
 
 		if ( o instanceof ItemStack ) {
-			ItemStack stack = ( ItemStack ) o;
+			SpoutItemStack sis = new SpoutItemStack( ( ItemStack ) o );
 
-			if ( unit_material != stack.getType() )
+			if ( unit_name.equals( sis.getMaterial().getNotchianName() ) )
 				return false;
 
-			if ( unit_durability != stack.getDurability() )
+			if ( unit_durability != sis.getDurability() )
 				return false;
 
-			if ( unit_data != stack.getData().getData() )
+			if ( unit_data != sis.getData().getData() )
 				return false;
+
+			Map< Enchantment, Integer > sis_enc = sis.getEnchantments();
+
+			if ( unit_enchantments.size() != sis_enc.size() )
+				return false;
+
+			if ( sis_enc.size() != 0 ) {
+				for ( Enchantment enc : sis_enc.keySet() ) {
+					if ( !unit_enchantments.containsKey( enc ) )
+						return false;
+
+					if ( unit_enchantments.get( enc ) != sis_enc.get( enc ) )
+						return false;
+				}
+			}
 
 			return true;
 		}
