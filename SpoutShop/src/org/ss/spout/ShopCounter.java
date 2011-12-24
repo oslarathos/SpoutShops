@@ -18,7 +18,7 @@ public class ShopCounter
 		Plugin plugin = SpoutShopPlugin.getInstance();
 
 		// Creating the texture.
-		Texture tex = new Texture( plugin, "http://www.langricr.ca/files/shop_3D.png", 48, 16, 12 );
+		Texture tex = new Texture( plugin, "http://www.langricr.ca/files/shop_3Dx32.png", 128, 32, 32 );
 
 		// http://puu.sh/bkJ4
 
