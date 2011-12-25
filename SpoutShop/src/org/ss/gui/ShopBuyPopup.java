@@ -58,11 +58,6 @@ public class ShopBuyPopup
 	public ShopBuyPopup( SpoutPlayer p, Shop s, int p_scan_index, boolean p_forward_scan, String p_search ) {
 		super( "Shop: Buy Items", p, s );
 
-		if ( !shop.isManager( player ) ) {
-			close();
-			return;
-		}
-
 		this.forward_scan = p_forward_scan;
 		this.scan_index = p_scan_index;
 		this.search = p_search;
@@ -261,11 +256,6 @@ public class ShopBuyPopup
 
 	public void onButtonClick( ButtonClickEvent bce ) {
 		Button button = bce.getButton();
-
-		if ( !shop.isManager( player ) ) {
-			close();
-			return;
-		}
 
 		if ( button.equals( btn_search ) ) {
 			new ShopBuyPopup( player, shop, 0, true, txt_search.getText() ).show();

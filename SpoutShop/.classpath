@@ -4,7 +4,7 @@
 	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/Workspace/libraries/ebean-2.7.3/ebean-2.7.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bukkit"/>
 	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/Vault.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/SpoutPluginAPI.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JDK 1.6.0_26"/>
+	<classpathentry kind="lib" path="C:/Users/Ghost/Downloads/spoutplugin-dev-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -150,6 +150,8 @@ public class ShopLookupItemPopup
 			}
 
 			GenericItemWidget display = new GenericItemWidget( sis );
+			display.setAnchor( WidgetAnchor.TOP_LEFT );
+			display.setFixed( true );
 			display.setX( 80 );
 			display.setY( y_start );
 			display.setWidth( 10 );
@@ -157,6 +159,7 @@ public class ShopLookupItemPopup
 			display.setTooltip( builder.toString() );
 
 			GenericLabel lbl_stock = new GenericLabel();
+			lbl_stock.setAnchor( WidgetAnchor.TOP_LEFT );
 			if ( entry.hasInfiniteStock() )
 				lbl_stock.setText( "Infinite Stock" );
 			else {

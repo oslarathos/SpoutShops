@@ -127,6 +127,7 @@ public class ShopManageOwnersPopup
 		int y_start = 10;
 		for ( String manager : managers ) {
 			GenericLabel lbl_manager = new GenericLabel( manager );
+			lbl_manager.setAnchor( WidgetAnchor.TOP_LEFT );
 			lbl_manager.setX( 80 );
 			lbl_manager.setY( y_start += 30 );
 			lbl_manager.setWidth( lbl_manager.getText().length() * 5 );
