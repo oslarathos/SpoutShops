@@ -68,6 +68,10 @@ public class SpoutShopPlugin
 				getConfig().load( config_file );
 			} else {
 				getConfig().set( "shop-counter-recipe", false );
+				getConfig().set( "texture-path", "http://www.langricr.ca/files/shop_3Dx32.png" );
+				getConfig().set( "texture-width", 128 );
+				getConfig().set( "texture-height", 32 );
+				getConfig().set( "texture-span", 32 );
 				getConfig().save( config_file );
 			}
 

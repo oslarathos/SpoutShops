@@ -47,6 +47,7 @@ public class ShopModifyItemPopup
 		display.setX( 100 );
 		display.setY( 10 );
 
+		lbl_amount.setAnchor( WidgetAnchor.TOP_LEFT );
 		lbl_amount.setX( 100 );
 		lbl_amount.setY( 40 );
 
@@ -77,6 +78,7 @@ public class ShopModifyItemPopup
 		lbl_amount.setHeight( 10 );
 
 		GenericLabel lbl_wanted = new GenericLabel( "Buying" );
+		lbl_wanted.setAnchor( WidgetAnchor.TOP_LEFT );
 		lbl_wanted.setX( 100 );
 		lbl_wanted.setY( 70 );
 		lbl_wanted.setWidth( lbl_wanted.getText().length() * 5 );
@@ -97,6 +99,7 @@ public class ShopModifyItemPopup
 		btn_buying_update.setHeight( 20 );
 
 		GenericLabel lbl_store_price = new GenericLabel( "Store\nPrice" );
+		lbl_store_price.setAnchor( WidgetAnchor.TOP_LEFT );
 		lbl_store_price.setX( 100 );
 		lbl_store_price.setY( 100 );
 		lbl_store_price.setWidth( lbl_wanted.getText().length() * 5 );
@@ -121,6 +124,7 @@ public class ShopModifyItemPopup
 		btn_store_price_update.setHeight( 20 );
 
 		GenericLabel lbl_purchase = new GenericLabel( "Purchase\nPrice" );
+		lbl_purchase.setAnchor( WidgetAnchor.TOP_LEFT );
 		lbl_purchase.setX( 100 );
 		lbl_purchase.setY( 130 );
 		lbl_purchase.setWidth( lbl_wanted.getText().length() * 5 );
@@ -144,6 +148,7 @@ public class ShopModifyItemPopup
 		btn_purchase_price_update.setHeight( 20 );
 
 		GenericLabel lbl_remove = new GenericLabel( "Remove\nItems" );
+		lbl_remove.setAnchor( WidgetAnchor.TOP_LEFT );
 		lbl_remove.setX( 100 );
 		lbl_remove.setY( 160 );
 		lbl_remove.setWidth( lbl_wanted.getText().length() * 5 );
