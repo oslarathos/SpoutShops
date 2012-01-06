@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/Vault.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JDK 1.6.0_26"/>
 	<classpathentry kind="lib" path="C:/Users/Ghost/Downloads/spoutplugin-dev-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ghost/Desktop/PermissionsEx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
+import org.ss.SpoutShopPermissions;
 
 public class Shop
 		implements Serializable {
@@ -63,7 +64,7 @@ public class Shop
 	}
 
 	public boolean isManager( Player player ) {
-		if ( player.hasPermission( "spoutshops.admin" ) )
+		if ( SpoutShopPermissions.ADMIN.hasNode( player ) )
 			return true;
 
 		return owners.contains( player.getName().toLowerCase() );

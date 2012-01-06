@@ -126,4 +126,5 @@ public class SpoutShopPlugin
 	public Economy getVaultEconomy() {
 		return vault_economy;
 	}
+
 }

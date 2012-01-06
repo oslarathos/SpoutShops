@@ -26,6 +26,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.getspout.spoutapi.block.SpoutBlock;
+import org.ss.SpoutShopPermissions;
 import org.ss.SpoutShopPlugin;
 import org.ss.serial.Coordinate;
 import org.ss.shop.Shop;
@@ -166,13 +167,12 @@ public class SSBlockListener
 
 		Player player = event.getPlayer();
 
-		if ( !player.hasPermission( "spoutshops.destroy" ) || !player.hasPermission( "spoutshops.admin" ) ) {
+		if ( !SpoutShopPermissions.checkPermission( player, SpoutShopPermissions.DESTROY, SpoutShopPermissions.ADMIN ) ) {
 			player.sendMessage( "You do not have permission to destroy shops." );
 			event.setCancelled( true );
-			return;
 		}
 
-		if ( !shop.isManager( player ) && !player.hasPermission( "spoutshops.admin" ) ) {
+		if ( !shop.isManager( player ) && !SpoutShopPermissions.ADMIN.hasNode( player ) ) {
 			player.sendMessage( "This is not your shop to destroy." );
 			event.setCancelled( true );
 			return;
@@ -269,8 +269,8 @@ public class SSBlockListener
 							return;
 						}
 					} else {
-						if ( !player.hasPermission( "spoutshops.create.block" ) ) {
-							player.sendMessage( "You do not have permission to create a shop this way." );
+						if ( !SpoutShopPermissions.CREATE.hasNode( player ) ) {
+							player.sendMessage( "You do not have permission to create a shop." );
 							event.setCancelled( true );
 							return;
 						}
@@ -293,8 +293,8 @@ public class SSBlockListener
 
 		Player player = event.getPlayer();
 
-		if ( !player.hasPermission( "spoutshops.create.sign" ) ) {
-			player.sendMessage( "You do not have permission to create a shop this way." );
+		if ( !SpoutShopPermissions.CREATE.hasNode( player ) ) {
+			player.sendMessage( "You do not have permission to create a shop." );
 			event.setCancelled( true );
 			return;
 		}

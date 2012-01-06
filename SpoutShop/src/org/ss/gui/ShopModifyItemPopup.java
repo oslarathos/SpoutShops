@@ -10,6 +10,7 @@ import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.GenericTextField;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.ss.SpoutShopPermissions;
 import org.ss.shop.Shop;
 import org.ss.shop.ShopEntry;
 
@@ -51,7 +52,7 @@ public class ShopModifyItemPopup
 		lbl_amount.setX( 100 );
 		lbl_amount.setY( 40 );
 
-		if ( player.hasPermission( "spoutshops.admin" ) ) {
+		if ( SpoutShopPermissions.ADMIN.hasNode( player ) ) {
 			lbl_amount.setText( "Modify\nStock" );
 
 			txt_setamount = new GenericTextField();

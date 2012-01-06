@@ -57,7 +57,7 @@ public class ShopPopup
 		btn_menu_manager.setY( 10 );
 		btn_menu_manager.setWidth( 80 );
 		btn_menu_manager.setHeight( 20 );
-		if ( !shop.isManager( player ) && !player.hasPermission( "spoutshops.admin" ) )
+		if ( !shop.isManager( player ) )
 			btn_menu_manager.setEnabled( false );
 
 		btn_menu_buy.setAnchor( WidgetAnchor.TOP_LEFT );

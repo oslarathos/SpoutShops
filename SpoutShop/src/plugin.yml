@@ -4,6 +4,7 @@ email: langricr@bell.net
 version: 1.1
 main: org.ss.SpoutShopPlugin
 depend: [Vault,Spout]
+softdepend: [PermissionsEx]
 
 permissions:
     spoutshops.*:

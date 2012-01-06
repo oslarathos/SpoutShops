@@ -10,6 +10,7 @@ import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.GenericTextField;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.ss.SpoutShopPermissions;
 import org.ss.shop.Shop;
 
 public class ShopVaultPopup
@@ -30,7 +31,7 @@ public class ShopVaultPopup
 			return;
 		}
 
-		if ( player.hasPermission( "spoutshops.admin" ) ) {
+		if ( SpoutShopPermissions.ADMIN.hasNode( player ) ) {
 			GenericLabel lbl_setfunds = new GenericLabel( "Set\nFunds" );
 			lbl_setfunds.setAnchor( WidgetAnchor.TOP_LEFT );
 			lbl_setfunds.setX( 70 );
