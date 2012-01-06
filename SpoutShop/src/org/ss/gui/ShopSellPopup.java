@@ -96,8 +96,8 @@ public class ShopSellPopup
 		}
 
 		int mod = forward_scan ? 1 : -1;
-		int shown = 0;
-		for ( ; shown < 5; ) {
+		int found_entries = 0;
+		while ( found_entries < 5 ) {
 			if ( p_forward_scan ) {
 				if ( scan_index == s.shop_entries.size() )
 					break;
@@ -118,7 +118,12 @@ public class ShopSellPopup
 				continue;
 			}
 
-			shown++;
+			if ( range_start == -1 )
+				range_start = scan_index;
+			else
+				range_end = scan_index;
+
+			found_entries++;
 			shop_entries.add( entry );
 			scan_index += mod;
 		}
@@ -201,7 +206,7 @@ public class ShopSellPopup
 			attachWidgets( lbl_num, display, lbl_qty, lbl_cost, txt_amount, btn_sell );
 		}
 
-		if ( shown == 0 ) {
+		if ( found_entries == 0 ) {
 			if ( p_search != null )
 				setStatus( color_red, "Nothing matched your search terms." );
 			else
@@ -211,8 +216,8 @@ public class ShopSellPopup
 		if ( forward_scan ) {
 			if ( p_scan_index != 0 && scan_index != 0 )
 				btn_prev.setEnabled( true );
-		} else {
-			for ( int start = ( forward_scan ? range_start : range_end ) + 1; start > 0; start-- ) {
+		} else if ( range_end > 0 ) {
+			for ( int start = range_end - 1; start >= 0; start-- ) {
 				ShopEntry entry = s.shop_entries.get( start );
 
 				if ( p_search != null && !entry.matchesString( p_search ) )
@@ -226,7 +231,7 @@ public class ShopSellPopup
 			}
 		}
 
-		if ( shown == 5 ) {
+		if ( found_entries == 5 ) {
 			for ( int start = ( forward_scan ? range_end : range_start ) + 1; start < s.shop_entries.size(); start++ ) {
 				ShopEntry entry = s.shop_entries.get( start );
 
@@ -246,11 +251,21 @@ public class ShopSellPopup
 	public void onButtonClick( ButtonClickEvent bce ) {
 		Button button = bce.getButton();
 
+		// if ( button.equals( btn_next ) ) {
+		// new ShopSellPopup( player, shop, ( forward_scan ? range_end :
+		// range_start ) + 1, true, search ).show();
+		// return;
+		// }
 		if ( button.equals( btn_next ) ) {
 			new ShopSellPopup( player, shop, ( forward_scan ? range_end : range_start ) + 1, true, search ).show();
 			return;
 		}
 
+		// if ( button.equals( btn_prev ) ) {
+		// new ShopSellPopup( player, shop, ( forward_scan ? range_start :
+		// range_end ) - 1, false, search ).show();
+		// return;
+		// }
 		if ( button.equals( btn_prev ) ) {
 			new ShopSellPopup( player, shop, ( forward_scan ? range_start : range_end ) - 1, false, search ).show();
 			return;

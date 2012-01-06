@@ -10,7 +10,7 @@ public enum SpoutShopPermissions {
 	DESTROY( "spoutshops.destroy" ),
 	CREATE( "spoutshops.create" ),
 	EXTEND( "spoutshops.extend" ),
-	INTERACT( "spotshops.interact" );
+	INTERACT( "spoutshops.interact" );
 
 	public static boolean checkPermission( Player player, SpoutShopPermissions... permissions ) {
 		for ( SpoutShopPermissions permission : permissions ) {

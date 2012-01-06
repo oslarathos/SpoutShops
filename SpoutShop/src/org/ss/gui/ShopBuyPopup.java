@@ -131,7 +131,6 @@ public class ShopBuyPopup
 
 			found_entries++;
 			shop_entries.add( entry );
-
 			scan_index += mod;
 		}
 
@@ -223,8 +222,8 @@ public class ShopBuyPopup
 		if ( forward_scan ) {
 			if ( p_scan_index != 0 && scan_index != 0 )
 				btn_prev.setEnabled( true );
-		} else {
-			for ( int start = ( forward_scan ? range_start : range_end ) + 1; start > 0; start-- ) {
+		} else if ( range_end > 0 ) {
+			for ( int start = range_end - 1; start >= 0; start-- ) {
 				ShopEntry entry = s.shop_entries.get( start );
 
 				if ( p_search != null && !entry.matchesString( p_search ) )
@@ -262,13 +261,13 @@ public class ShopBuyPopup
 			return;
 		}
 
-		if ( button.equals( btn_prev ) ) {
-			new ShopBuyPopup( player, shop, ( forward_scan ? range_start : range_end ) - 1, false, search ).show();
+		if ( button.equals( btn_next ) ) {
+			new ShopBuyPopup( player, shop, ( forward_scan ? range_end : range_start ) + 1, true, search ).show();
 			return;
 		}
 
-		if ( button.equals( btn_next ) ) {
-			new ShopBuyPopup( player, shop, ( forward_scan ? range_end : range_start ) + 1, true, search ).show();
+		if ( button.equals( btn_prev ) ) {
+			new ShopBuyPopup( player, shop, ( forward_scan ? range_start : range_end ) - 1, false, search ).show();
 			return;
 		}
 

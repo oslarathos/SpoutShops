@@ -2,7 +2,9 @@
 package org.ss;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,17 +66,25 @@ public class SpoutShopPlugin
 		try {
 			File config_file = new File( getDataFolder(), "config.ini" );
 
-			if ( config_file.exists() ) {
-				getConfig().load( config_file );
-			} else {
-				getConfig().set( "shop-counter-recipe", false );
-				getConfig().set( "texture-path", "http://www.langricr.ca/files/shop_3Dx32.png" );
-				getConfig().set( "texture-width", 128 );
-				getConfig().set( "texture-height", 32 );
-				getConfig().set( "texture-span", 32 );
-				getConfig().save( config_file );
+			if ( !config_file.exists() ) {
+				log( "Extracting config.ini" );
+				config_file.createNewFile();
+
+				byte[] buffer = new byte[ 128 ];
+				InputStream is = getResource( "config.ini" );
+				FileOutputStream fos = new FileOutputStream( config_file );
+
+				int read = 0;
+				while ( ( read = is.read( buffer ) ) > 0 ) {
+					fos.write( buffer, 0, read );
+					fos.flush();
+				}
+
+				fos.close();
+				is.close();
 			}
 
+			getConfig().load( config_file );
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			getPluginLoader().disablePlugin( this );
