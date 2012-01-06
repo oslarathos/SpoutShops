@@ -42,7 +42,7 @@ public class SSPlayerListener
 
 		SpoutPlayer player = SpoutManager.getPlayer( event.getPlayer() );
 
-		if ( SpoutShopPermissions.INTERACT.hasNode( player ) ) {
+		if ( !SpoutShopPermissions.INTERACT.hasNode( player ) ) {
 			player.sendMessage( "You do not have permission to interact with shops." );
 			event.setCancelled( true );
 			return;
