@@ -1,7 +1,7 @@
 name: SpoutShops
 author: Richard Lang
 email: langricr@bell.net
-version: 1.1
+version: 1.5
 main: org.ss.SpoutShopPlugin
 depend: [Vault,Spout]
 softdepend: [PermissionsEx]
@@ -12,36 +12,18 @@ permissions:
         description: Gives all SpoutShops permissions.
         children:
             spoutshops.admin: true
-            spoutshops.create.*: true
+            spoutshops.create: true
             spoutshops.destroy: true
-            spoutshops.interact.*: true
+            spoutshops.interact: true
     spoutshops.admin:
         default: op
         description: Permits the modification and destruction of others' shops.
-    spoutshops.create.*:
+    spoutshops.create:
         default: true
-        description: Permits the creation of all shop types.
-        children:
-            spoutshops.create.sign: true
-            spoutshops.create.block: true
-    spoutshops.create.sign:
-        default: true
-        description: Permits the creation of sign-based shops.
-    spoutshops.create.block:
-        default: true
-        description: Permits the creation of shops using the Shop block.
-    spoutshops.interact.*:
+        description: Permits the creation of shops.
+    spoutshops.interact:
         default: op
         description: Allows players to interact with all spoutshop interfaces.
-        children:
-            spoutshops.interact.sign: true
-            spoutshops.interact.block: true
-    spoutshops.interact.sign:
-        default: true
-        description: Allows the player to interact with Sign-based spoutshops.
-    spoutshops.interact.block:
-        default: true
-        description: Allows the player to interact with shops created using Shop Counters
     spoutshops.destroy:
         default: true
         description: Permits the destruction of owned shops.
