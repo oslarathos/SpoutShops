@@ -21,10 +21,6 @@ public class Shop
 	public String shop_motd = "A shop";
 	public double shop_vault = 0;
 
-	public Shop( String owner ) {
-		owners.add( owner );
-	}
-
 	public void add( ItemStack stack ) {
 		SpoutItemStack sis = new SpoutItemStack( stack );
 
@@ -61,6 +57,11 @@ public class Shop
 			shop_entries.remove( entry );
 
 		return stack;
+	}
+
+	public void addOwner( String name ) {
+		if ( !owners.contains( name.toLowerCase() ) )
+			owners.add( name.toLowerCase() );
 	}
 
 	public boolean isManager( Player player ) {

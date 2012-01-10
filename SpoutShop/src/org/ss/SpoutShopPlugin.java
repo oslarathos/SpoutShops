@@ -1,12 +1,15 @@
 
 package org.ss;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -90,6 +93,32 @@ public class SpoutShopPlugin
 			getPluginLoader().disablePlugin( this );
 			return;
 		}
+
+		// Checking for desired texture
+		File block_texture_file = new File( getDataFolder(), "shop-block.png" );
+		if ( block_texture_file.exists() ) {
+			try {
+				SpoutManager.getFileManager().addToCache( this, block_texture_file );
+
+				BufferedImage block_texture = ImageIO.read( block_texture_file );
+
+				ShopCounter.setTexture( block_texture_file.getName(), block_texture.getWidth(),
+						block_texture.getHeight(), block_texture.getWidth() / 4 );
+
+				log( "Now using shop-block.png" );
+			} catch ( Exception e ) {
+				log( Level.SEVERE, "Failed to read shop-block.png" );
+			}
+		} else if ( getConfig().isSet( "texture-path" ) ) {
+			int texwidth = getConfig().getInt( "texture-width" );
+			int texheight = getConfig().getInt( "texture-height" );
+			int texspan = getConfig().getInt( "texture-span" );
+
+			ShopCounter.setTexture( getConfig().getString( "texture-path" ), texwidth, texheight, texspan );
+
+			log( "Now using remote image at " + texwidth + "x" + texheight + "@" + texspan );
+		} else
+			log( "Using default texture" );
 
 		// Loading up shops.
 		try {

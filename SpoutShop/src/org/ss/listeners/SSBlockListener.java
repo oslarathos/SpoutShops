@@ -275,7 +275,8 @@ public class SSBlockListener
 							return;
 						}
 
-						shop = new Shop( event.getPlayer().getName() );
+						shop = new Shop();
+						shop.addOwner( event.getPlayer().getName() );
 					}
 
 					Coordinate coord = new Coordinate( event.getBlock() );
@@ -300,7 +301,8 @@ public class SSBlockListener
 		}
 
 		Coordinate coord = new Coordinate( event.getBlock() );
-		Shop shop = new Shop( event.getPlayer().getName() );
+		Shop shop = new Shop();
+		shop.addOwner( event.getPlayer().getName() );
 		shop_coord_roster.put( coord, shop );
 		System.out.println( coord.toString() );
 		player.sendMessage( "Your shop has been created, right click the sign to access it." );

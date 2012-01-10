@@ -30,6 +30,7 @@ public class ShopModifyItemPopup
 	private GenericButton btn_purchase_price_update = new GenericButton( "Update" );
 	private GenericTextField txt_remove = new GenericTextField();
 	private GenericButton btn_remove = new GenericButton( "Remove" );
+	private GenericButton btn_delete = new GenericButton( "Delete" );
 
 	public ShopModifyItemPopup( SpoutPlayer player, Shop shop, ShopEntry entry ) {
 		super( "Shop: Modify Item", player, shop );
@@ -40,6 +41,12 @@ public class ShopModifyItemPopup
 			close();
 			return;
 		}
+
+		btn_delete.setAnchor( WidgetAnchor.TOP_LEFT );
+		btn_delete.setX( SCREEN_WIDTH - 90 );
+		btn_delete.setY( 100 );
+		btn_delete.setWidth( 80 );
+		btn_delete.setHeight( 20 );
 
 		GenericItemWidget display = new GenericItemWidget( entry.createItemStack() );
 		display.setAnchor( WidgetAnchor.TOP_LEFT );
@@ -61,7 +68,8 @@ public class ShopModifyItemPopup
 			txt_setamount.setY( 40 );
 			txt_setamount.setWidth( 80 );
 			txt_setamount.setHeight( 20 );
-			txt_setamount.setPlaceholder( Integer.toString( entry.units_in_stock ) );
+			txt_setamount.setPlaceholder( Integer.toString( entry.units_in_stock )
+					+ ( entry.hasInfiniteStock() ? " (Infinite)" : "" ) );
 			txt_setamount.setTooltip( "The number of units in stock.\n-1 means infinite stock." );
 
 			btn_setamount_update = new GenericButton( "Update" );
@@ -91,7 +99,8 @@ public class ShopModifyItemPopup
 		txt_buying.setY( 70 );
 		txt_buying.setWidth( 80 );
 		txt_buying.setHeight( 20 );
-		txt_buying.setPlaceholder( Integer.toString( entry.units_wanted ) );
+		txt_buying.setPlaceholder( Integer.toString( entry.units_wanted )
+				+ ( entry.hasInfiniteDemand() ? " (Infinite)" : "" ) );
 
 		btn_buying_update.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_buying_update.setX( SCREEN_WIDTH - 180 );
@@ -114,7 +123,7 @@ public class ShopModifyItemPopup
 		txt_store_price.setWidth( 80 );
 		txt_store_price.setHeight( 20 );
 		if ( entry.cost_to_buy_unit < 0 )
-			txt_store_price.setPlaceholder( "Not Set" );
+			txt_store_price.setPlaceholder( "Not For Sale" );
 		else
 			txt_store_price.setPlaceholder( Double.toString( entry.cost_to_buy_unit ) );
 
@@ -138,7 +147,7 @@ public class ShopModifyItemPopup
 		txt_purchase_price.setWidth( 80 );
 		txt_purchase_price.setHeight( 20 );
 		if ( entry.cost_to_sell_unit < 0 )
-			txt_purchase_price.setPlaceholder( "Not Set" );
+			txt_purchase_price.setPlaceholder( "Not For Sale" );
 		else
 			txt_purchase_price.setPlaceholder( Double.toString( entry.cost_to_sell_unit ) );
 
@@ -168,7 +177,7 @@ public class ShopModifyItemPopup
 		btn_remove.setWidth( 80 );
 		btn_remove.setHeight( 20 );
 
-		attachWidgets( display, lbl_amount, lbl_wanted, txt_buying, btn_buying_update, lbl_store_price,
+		attachWidgets( btn_delete, display, lbl_amount, lbl_wanted, txt_buying, btn_buying_update, lbl_store_price,
 				txt_store_price, btn_store_price_update, lbl_purchase, txt_purchase_price, btn_purchase_price_update,
 				lbl_remove, txt_remove, btn_remove );
 	}
@@ -178,6 +187,22 @@ public class ShopModifyItemPopup
 
 		if ( !shop.isManager( player ) ) {
 			close();
+			return;
+		}
+
+		if ( button.equals( btn_delete ) ) {
+			if ( entry.units_in_stock > 0 ) {
+				ItemStack stack = entry.createItemStack();
+				stack.setAmount( entry.units_in_stock );
+
+				player.getInventory().addItem( stack );
+			}
+
+			shop.shop_entries.remove( entry );
+
+			ShopLookupItemPopup popup = new ShopLookupItemPopup( player, shop );
+			popup.setStatus( color_green, "Entry deleted." );
+			popup.show();
 			return;
 		}
 
@@ -205,19 +230,19 @@ public class ShopModifyItemPopup
 			try {
 				Integer amount = Integer.parseInt( txt_buying.getText() );
 
-				if ( amount == 0 ) {
-					setStatus( color_green, "You are no longer buying this item." );
-					return;
-				} else if ( amount < 0 ) {
+				if ( amount < 0 ) {
 					setStatus( color_green, "Infinite demand activate." );
-					entry.units_wanted = -1;
 				} else {
-					entry.units_wanted = amount;
-					setStatus( color_green, "Now buying " + amount + " units" );
+					if ( amount == 0 )
+						setStatus( color_green, "You are no longer buying this item." );
+					else
+						setStatus( color_green, "Now buying " + amount + " units" );
 				}
 			} catch ( Exception e ) {
 				setError( "You must enter only a number." );
 			}
+
+			return;
 		}
 
 		if ( button.equals( btn_store_price_update ) ) {
@@ -278,19 +303,15 @@ public class ShopModifyItemPopup
 				entry.units_in_stock -= amount;
 				player.getInventory().addItem( stack );
 
-				if ( entry.units_in_stock == 0 && entry.units_wanted == 0 ) {
-					ShopLookupItemPopup popup = new ShopLookupItemPopup( player, shop );
-					popup.setStatus( color_green, "All of the units have been removed." );
-					popup.show();
-					return;
-				} else {
+				if ( entry.units_in_stock == 0 )
+					setStatus( color_green, "All of the units have been removed." );
+				else
 					setStatus( color_green, amount + " units have been removed." );
 
-					if ( !player.hasPermission( "spoutshops.admin" ) )
-						lbl_amount.setText( "In Stock: " + entry.units_in_stock );
-					else
-						txt_setamount.setPlaceholder( Integer.toString( entry.units_in_stock ) );
-				}
+				if ( !player.hasPermission( "spoutshops.admin" ) )
+					lbl_amount.setText( "In Stock: " + entry.units_in_stock );
+				else
+					txt_setamount.setPlaceholder( Integer.toString( entry.units_in_stock ) );
 
 			} catch ( NumberFormatException nfe ) {
 				setError( "Please enter only a positive number." );

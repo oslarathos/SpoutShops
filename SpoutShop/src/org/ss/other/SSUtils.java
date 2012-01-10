@@ -17,4 +17,22 @@ public class SSUtils {
 		return material.name().replaceAll( "_", " " );
 	}
 
+	public static boolean isBitSet( byte value, int index ) {
+		return ( value & ( 1 << index ) ) != 0;
+	}
+
+	// 0 0 0 1 0 1 0 0
+	// start = 0
+	// end = 4
+	// value should be 4
+	public static byte subsetByte( byte value, int start, int end ) {
+		byte subset = ( byte ) 0;
+
+		for ( int index = start; index < end; index++ ) {
+			if ( isBitSet( value, index ) )
+				subset |= ( 1 << index );
+		}
+
+		return subset;
+	}
 }

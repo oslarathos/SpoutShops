@@ -1,6 +1,9 @@
 
 package org.ss.gui;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 import net.milkbowl.vault.economy.Economy;
 
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
@@ -15,11 +18,17 @@ import org.ss.shop.Shop;
 
 public class ShopPopup
 		extends PlayerPopup {
+	protected static final DecimalFormat format = new DecimalFormat( "#.####" );
 	protected static final Economy economy = SpoutShopPlugin.getInstance().getVaultEconomy();
 
 	protected static final Color color_green = new Color( 100, 255, 100 );
 	protected static final Color color_white = new Color( 255, 255, 255 );
 	protected static final Color color_red = new Color( 255, 100, 100 );
+
+	// Setting up static information
+	static {
+		format.setRoundingMode( RoundingMode.HALF_UP );
+	}
 
 	public final Shop shop;
 

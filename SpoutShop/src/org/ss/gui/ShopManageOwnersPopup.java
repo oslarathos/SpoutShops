@@ -169,7 +169,7 @@ public class ShopManageOwnersPopup
 
 		if ( button.equals( btn_search ) ) {
 			if ( txt_search.getText() != null )
-				new ShopManageOwnersPopup( player, shop, 0, true, txt_search.getText() ).show();
+				new ShopManageOwnersPopup( player, shop, 0, true, txt_search.getText().toLowerCase() ).show();
 			else
 				setError( "Please enter a search term first." );
 

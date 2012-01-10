@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.gui.Button;
@@ -16,6 +17,7 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.ss.other.SSEnchantment;
+import org.ss.other.SSPotion;
 import org.ss.shop.Shop;
 import org.ss.shop.ShopEntry;
 
@@ -130,7 +132,7 @@ public class ShopLookupItemPopup
 
 		int y_start = 10;
 		for ( ShopEntry entry : shop_entries ) {
-			SpoutItemStack sis = entry.createItemStack();
+			SpoutItemStack stack = entry.createItemStack();
 
 			GenericButton btn_modify = new GenericButton( "Modify" );
 			btn_modify.setAnchor( WidgetAnchor.TOP_LEFT );
@@ -140,22 +142,32 @@ public class ShopLookupItemPopup
 			btn_modify.setHeight( 20 );
 			modify_entry_buttons.add( btn_modify );
 
-			StringBuilder builder = new StringBuilder( sis.getMaterial().getNotchianName() );
-
-			Map< Enchantment, Integer > enchantments = sis.getEnchantments();
-			if ( enchantments.size() != 0 ) {
-				for ( Enchantment enc : enchantments.keySet() ) {
-					builder.append( "\n" + SSEnchantment.lookup( enc.getId() ) + ": Level " + enchantments.get( enc ) );
-				}
-			}
-
-			GenericItemWidget display = new GenericItemWidget( sis );
+			GenericItemWidget display = new GenericItemWidget( stack );
 			display.setAnchor( WidgetAnchor.TOP_LEFT );
 			display.setFixed( true );
 			display.setX( 80 );
 			display.setY( y_start );
 			display.setWidth( 10 );
 			display.setHeight( 10 );
+
+			StringBuilder builder = new StringBuilder();
+
+			if ( stack.getType() == Material.POTION ) {
+				builder.append( SSPotion.format( stack ) );
+			} else
+				builder.append( stack.getMaterial().getNotchianName() );
+
+			if ( stack.getEnchantments().size() != 0 ) {
+				Map< Enchantment, Integer > enchantments = stack.getEnchantments();
+
+				if ( enchantments.size() != 0 ) {
+					for ( Enchantment enc : enchantments.keySet() ) {
+						builder.append( "\n" + SSEnchantment.lookup( enc.getId() ) + ": Level "
+								+ enchantments.get( enc ) );
+					}
+				}
+			}
+
 			display.setTooltip( builder.toString() );
 
 			GenericLabel lbl_stock = new GenericLabel();
