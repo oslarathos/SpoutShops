@@ -247,7 +247,8 @@ public class ShopModifyItemPopup
 
 		if ( button.equals( btn_store_price_update ) ) {
 			try {
-				Double amount = Double.parseDouble( txt_store_price.getText() );
+				double amount = Double.parseDouble( txt_store_price.getText() );
+				amount = Double.parseDouble( format.format( amount ) );
 
 				if ( amount < 0 ) {
 					entry.cost_to_buy_unit = -1;
@@ -264,7 +265,8 @@ public class ShopModifyItemPopup
 
 		if ( button.equals( btn_purchase_price_update ) ) {
 			try {
-				Double amount = Double.parseDouble( txt_purchase_price.getText() );
+				double amount = Double.parseDouble( txt_purchase_price.getText() );
+				amount = Double.parseDouble( format.format( amount ) );
 
 				if ( amount < 0 ) {
 					entry.cost_to_sell_unit = -1;
@@ -283,8 +285,8 @@ public class ShopModifyItemPopup
 			try {
 				Integer amount = Integer.parseInt( txt_remove.getText() );
 
-				if ( amount < 0 ) {
-					setError( "Please go to the add items screen instead." );
+				if ( amount < 1 ) {
+					setError( "Please enter only a positive number." );
 					return;
 				}
 

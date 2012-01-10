@@ -110,7 +110,8 @@ public class ShopVaultPopup
 
 		if ( button.equals( btn_setfunds_update ) ) {
 			try {
-				Double amount = Double.parseDouble( format.format( txt_setfunds.getText() ) );
+				double amount = Double.parseDouble( txt_setfunds.getText() );
+				amount = Double.parseDouble( format.format( amount ) );
 
 				if ( amount < 0 ) {
 					shop.shop_vault = -1;
@@ -129,7 +130,8 @@ public class ShopVaultPopup
 
 		if ( button.equals( btn_withdraw ) ) {
 			try {
-				Double amount = Double.parseDouble( format.format( txt_withdraw.getText() ) );
+				double amount = Double.parseDouble( txt_withdraw.getText() );
+				amount = Double.parseDouble( format.format( amount ) );
 
 				if ( amount < 0 ) {
 					setError( "Please use deposit instead." );
@@ -163,8 +165,8 @@ public class ShopVaultPopup
 
 		if ( button.equals( btn_deposit ) ) {
 			try {
-
-				Double amount = Double.parseDouble( format.format( txt_deposit.getText() ) );
+				double amount = Double.parseDouble( txt_deposit.getText() );
+				amount = Double.parseDouble( format.format( amount ) );
 
 				if ( amount < 0 ) {
 					setError( "Please use withdraw instead." );
