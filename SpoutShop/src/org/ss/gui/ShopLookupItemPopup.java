@@ -17,6 +17,7 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.ss.other.SSEnchantment;
+import org.ss.other.SSLang;
 import org.ss.other.SSPotion;
 import org.ss.shop.Shop;
 import org.ss.shop.ShopEntry;
@@ -33,7 +34,7 @@ public class ShopLookupItemPopup
 	private GenericButton btn_prev;
 	private GenericButton btn_next;
 	private GenericTextField txt_search = new GenericTextField();
-	private GenericButton btn_search = new GenericButton( "Search" );
+	private GenericButton btn_search = new GenericButton();
 
 	private ArrayList< ShopEntry > shop_entries = new ArrayList< ShopEntry >();
 	private ArrayList< GenericButton > modify_entry_buttons = new ArrayList< GenericButton >();
@@ -51,7 +52,7 @@ public class ShopLookupItemPopup
 	}
 
 	public ShopLookupItemPopup( SpoutPlayer p, Shop s, int p_scan_index, boolean p_forward_scan, String p_search ) {
-		super( "Shop: Lookup", p, s );
+		super( SSLang.lookup( p, "lbl_slip_title" ), p, s );
 
 		if ( !shop.isManager( player ) ) {
 			close();
@@ -64,21 +65,22 @@ public class ShopLookupItemPopup
 
 		txt_search.setAnchor( WidgetAnchor.TOP_LEFT );
 		txt_search.setX( 80 );
-		txt_search.setY( 10 );
-		txt_search.setWidth( 140 );
+		txt_search.setY( SCREEN_HEIGHT - 45 );
+		txt_search.setWidth( 200 );
 		txt_search.setHeight( 20 );
-		txt_search.setPlaceholder( "Quick Search" );
 		if ( p_search != null )
 			txt_search.setPlaceholder( p_search );
+		else
+			txt_search.setPlaceholder( SSLang.lookup( player, "txt_search" ) );
 
 		btn_search.setAnchor( WidgetAnchor.TOP_LEFT );
-		btn_search.setX( SCREEN_WIDTH - 180 );
-		btn_search.setY( 10 );
+		btn_search.setX( SCREEN_WIDTH - 90 );
+		btn_search.setY( SCREEN_HEIGHT - 45 );
 		btn_search.setWidth( 80 );
 		btn_search.setHeight( 20 );
-		attachWidgets( txt_search, btn_search );
+		btn_search.setText( SSLang.lookup( player, "btn_search" ) );
 
-		btn_prev = new GenericButton( "Previous" );
+		btn_prev = new GenericButton( SSLang.lookup( player, "btn_prev" ) );
 		btn_prev.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_prev.setX( SCREEN_WIDTH - 90 );
 		btn_prev.setY( 100 );
@@ -86,7 +88,7 @@ public class ShopLookupItemPopup
 		btn_prev.setHeight( 20 );
 		btn_prev.setEnabled( false );
 
-		btn_next = new GenericButton( "Next" );
+		btn_next = new GenericButton( SSLang.lookup( player, "btn_next" ) );
 		btn_next.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_next.setX( SCREEN_WIDTH - 90 );
 		btn_next.setY( 130 );
@@ -94,11 +96,10 @@ public class ShopLookupItemPopup
 		btn_next.setHeight( 20 );
 		btn_next.setEnabled( false );
 
-		attachWidgets( btn_prev, btn_next );
+		attachWidgets( txt_search, btn_search, btn_prev, btn_next );
 
 		int mod = forward_scan ? 1 : -1;
 		int found_entries = 0;
-
 		while ( found_entries < 5 ) {
 			if ( p_forward_scan ) {
 				if ( scan_index == s.shop_entries.size() )
@@ -130,11 +131,13 @@ public class ShopLookupItemPopup
 		if ( !p_forward_scan )
 			Collections.reverse( shop_entries );
 
+		String txt_modify = SSLang.lookup( player, "btn_slip_modify" );
+
 		int y_start = 10;
 		for ( ShopEntry entry : shop_entries ) {
 			SpoutItemStack stack = entry.createItemStack();
 
-			GenericButton btn_modify = new GenericButton( "Modify" );
+			GenericButton btn_modify = new GenericButton( txt_modify );
 			btn_modify.setAnchor( WidgetAnchor.TOP_LEFT );
 			btn_modify.setX( SCREEN_WIDTH - 180 );
 			btn_modify.setY( y_start += 30 );
@@ -162,8 +165,7 @@ public class ShopLookupItemPopup
 
 				if ( enchantments.size() != 0 ) {
 					for ( Enchantment enc : enchantments.keySet() ) {
-						builder.append( "\n" + SSEnchantment.lookup( enc.getId() ) + ": Level "
-								+ enchantments.get( enc ) );
+						builder.append( "\n" + SSEnchantment.lookup( enc.getId() ) + ": LvL " + enchantments.get( enc ) );
 					}
 				}
 			}
@@ -173,12 +175,14 @@ public class ShopLookupItemPopup
 			GenericLabel lbl_stock = new GenericLabel();
 			lbl_stock.setAnchor( WidgetAnchor.TOP_LEFT );
 			if ( entry.hasInfiniteStock() )
-				lbl_stock.setText( "Infinite Stock" );
+				lbl_stock.setText( SSLang.lookup( player, "term_infinite_stock" ) );
 			else {
-				if ( entry.units_in_stock < 10000 )
-					lbl_stock.setText( Integer.toString( entry.units_in_stock ) + " Units" );
-				else
-					lbl_stock.setText( ">9999 Units" );
+				if ( entry.units_in_stock < 10000 ) {
+					String msg = SSLang.lookup( player, "term_units" );
+					msg = SSLang.format( msg, "amount", Integer.toString( entry.units_in_stock ) );
+					lbl_stock.setText( msg );
+				} else
+					lbl_stock.setText( SSLang.lookup( player, "term_units_ex" ) );
 			}
 			lbl_stock.setX( 110 );
 			lbl_stock.setY( y_start );
@@ -216,7 +220,7 @@ public class ShopLookupItemPopup
 			if ( txt_search.getText() != null )
 				new ShopLookupItemPopup( player, shop, 0, true, txt_search.getText() ).show();
 			else
-				setError( "Please enter a search term first." );
+				setError( SSLang.lookup( player, "err_search_empty" ) );
 
 			return;
 		}

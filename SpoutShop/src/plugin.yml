@@ -1,10 +1,10 @@
 name: SpoutShops
 author: Richard Lang
 email: langricr@bell.net
-version: 1.08
+version: 1.09
 main: org.ss.SpoutShopPlugin
-depend: [Vault,Spout]
-softdepend: [PermissionsEx]
+depend: [Spout,Vault]
+softdepend: [PermissionsEx,MinecraftCurrency]
 
 permissions:
     spoutshops.*:

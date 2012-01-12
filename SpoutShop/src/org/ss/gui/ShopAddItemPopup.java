@@ -10,6 +10,7 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.inventory.SpoutPlayerInventory;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.ss.other.SSLang;
 import org.ss.shop.Shop;
 
 public class ShopAddItemPopup
@@ -18,11 +19,11 @@ public class ShopAddItemPopup
 	private final GenericTextField txt_itemname = new GenericTextField();
 	private final GenericTextField txt_amount = new GenericTextField();
 
-	private final GenericButton btn_add = new GenericButton( "Add" );
-	private final GenericButton btn_dump = new GenericButton( "Add All" );
+	private final GenericButton btn_add = new GenericButton( SSLang.lookup( player, "btn_saip_add" ) );
+	private final GenericButton btn_dump = new GenericButton( SSLang.lookup( player, "btn_saip_dump" ) );
 
 	public ShopAddItemPopup( SpoutPlayer player, Shop shop ) {
-		super( "Shop: Add Items", player, shop );
+		super( SSLang.lookup( player, "lbl_saip_title" ), player, shop );
 
 		if ( !shop.isManager( player ) ) {
 			close();
@@ -40,14 +41,14 @@ public class ShopAddItemPopup
 		txt_itemname.setY( 40 );
 		txt_itemname.setWidth( SCREEN_WIDTH - 200 );
 		txt_itemname.setHeight( 20 );
-		txt_itemname.setPlaceholder( "Enter item name here." );
+		txt_itemname.setPlaceholder( SSLang.lookup( player, "txt_saip_itemname_placeholder" ) );
 
 		txt_amount.setAnchor( WidgetAnchor.TOP_LEFT );
 		txt_amount.setX( 100 );
 		txt_amount.setY( 70 );
 		txt_amount.setWidth( SCREEN_WIDTH - 260 );
 		txt_amount.setHeight( 20 );
-		txt_amount.setPlaceholder( "Enter item amount here." );
+		txt_amount.setPlaceholder( SSLang.lookup( player, "txt_saip_amount_placeholder" ) );
 
 		btn_add.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_add.setX( SCREEN_WIDTH - 140 );
@@ -83,7 +84,7 @@ public class ShopAddItemPopup
 
 					if ( compare_term.toUpperCase().replaceAll( "_", " " ).contains( search.toUpperCase() ) ) {
 						if ( stack.getAmount() <= amount ) {
-							inventory.remove( stack );
+							inventory.removeItem( stack );
 							amount -= stack.getAmount();
 							shop.add( stack );
 							count += stack.getAmount();
@@ -94,9 +95,11 @@ public class ShopAddItemPopup
 						break;
 				}
 
-				setStatus( color_green, "A total of " + count + " items have been added." );
+				String msg = SSLang.lookup( player, "suc_saip_add" );
+				msg = SSLang.format( msg, "amount", Integer.toString( count ) );
+				setStatus( color_green, msg );
 			} catch ( NumberFormatException nfe ) {
-				setError( "Please enter only a number in the quantity field." );
+				setError( SSLang.lookup( player, "err_not_number" ) );
 			}
 		}
 
@@ -117,7 +120,7 @@ public class ShopAddItemPopup
 			}
 
 			ShopManagerPopup screen = new ShopManagerPopup( player, shop );
-			setStatus( color_green, "Your inventory has been dumped into the store." );
+			setStatus( color_green, SSLang.lookup( player, "suc_saip_dump" ) );
 			screen.show();
 
 			return;

@@ -11,6 +11,7 @@ import org.getspout.spoutapi.gui.GenericTextField;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.ss.SpoutShopPermissions;
+import org.ss.other.SSLang;
 import org.ss.shop.Shop;
 
 public class ShopVaultPopup
@@ -19,12 +20,12 @@ public class ShopVaultPopup
 	GenericTextField txt_setfunds;
 	GenericButton btn_setfunds_update;
 	GenericTextField txt_withdraw = new GenericTextField();
-	GenericButton btn_withdraw = new GenericButton( "Withdraw" );
+	GenericButton btn_withdraw = new GenericButton();
 	GenericTextField txt_deposit = new GenericTextField();
-	GenericButton btn_deposit = new GenericButton( "Deposit" );
+	GenericButton btn_deposit = new GenericButton();
 
 	public ShopVaultPopup( SpoutPlayer player, Shop shop ) {
-		super( "Shop: Vault", player, shop );
+		super( SSLang.lookup( player, "lbl_svp_title" ), player, shop );
 
 		if ( !shop.isManager( player ) ) {
 			close();
@@ -32,7 +33,7 @@ public class ShopVaultPopup
 		}
 
 		if ( SpoutShopPermissions.ADMIN.hasNode( player ) ) {
-			GenericLabel lbl_setfunds = new GenericLabel( "Set\nFunds" );
+			GenericLabel lbl_setfunds = new GenericLabel( SSLang.lookup( player, "lbl_svp_setfunds" ) );
 			lbl_setfunds.setAnchor( WidgetAnchor.TOP_LEFT );
 			lbl_setfunds.setX( 70 );
 			lbl_setfunds.setY( 40 );
@@ -47,7 +48,7 @@ public class ShopVaultPopup
 			txt_setfunds.setHeight( 20 );
 			txt_setfunds.setPlaceholder( Double.toString( shop.shop_vault ) );
 
-			btn_setfunds_update = new GenericButton( "Update" );
+			btn_setfunds_update = new GenericButton( SSLang.lookup( player, "btn_svp_setfunds" ) );
 			btn_setfunds_update.setAnchor( WidgetAnchor.TOP_LEFT );
 			btn_setfunds_update.setX( SCREEN_WIDTH - 180 );
 			btn_setfunds_update.setY( 40 );
@@ -57,7 +58,7 @@ public class ShopVaultPopup
 			attachWidgets( lbl_setfunds, txt_setfunds, btn_setfunds_update );
 		}
 
-		GenericLabel lbl_withdraw = new GenericLabel( "Withdraw" );
+		GenericLabel lbl_withdraw = new GenericLabel( SSLang.lookup( player, "btn_svp_withdraw" ) );
 		lbl_withdraw.setAnchor( WidgetAnchor.TOP_LEFT );
 		lbl_withdraw.setX( 70 );
 		lbl_withdraw.setY( 70 );
@@ -76,8 +77,9 @@ public class ShopVaultPopup
 		btn_withdraw.setY( 70 );
 		btn_withdraw.setWidth( 80 );
 		btn_withdraw.setHeight( 20 );
+		btn_withdraw.setText( SSLang.lookup( player, "btn_svp_withdraw" ) );
 
-		GenericLabel lbl_deposit = new GenericLabel( "Deposit" );
+		GenericLabel lbl_deposit = new GenericLabel( SSLang.lookup( player, "btn_svp_deposit" ) );
 		lbl_deposit.setAnchor( WidgetAnchor.TOP_LEFT );
 		lbl_deposit.setX( 70 );
 		lbl_deposit.setY( 100 );
@@ -89,13 +91,14 @@ public class ShopVaultPopup
 		txt_deposit.setY( 100 );
 		txt_deposit.setWidth( 100 );
 		txt_deposit.setHeight( 20 );
-		txt_deposit.setPlaceholder( "0.00" );
+		txt_deposit.setPlaceholder( "$0.0000" );
 
 		btn_deposit.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_deposit.setX( SCREEN_WIDTH - 180 );
 		btn_deposit.setY( 100 );
 		btn_deposit.setWidth( 80 );
 		btn_deposit.setHeight( 20 );
+		btn_deposit.setText( SSLang.lookup( player, "btn_svp_deposit" ) );
 
 		attachWidgets( lbl_withdraw, txt_withdraw, btn_withdraw, lbl_deposit, txt_deposit, btn_deposit );
 	}
@@ -115,12 +118,15 @@ public class ShopVaultPopup
 
 				if ( amount < 0 ) {
 					shop.shop_vault = -1;
-					setStatus( color_green, "Infinite funds activated." );
+					setStatus( color_green, SSLang.lookup( player, "suc_svp_infinite_funds" ) );
 					return;
 				}
 
 				shop.shop_vault = amount;
-				setStatus( color_green, "Shop funds set to $" + amount );
+
+				String msg = SSLang.lookup( player, "suc_svp_setfunds" );
+				msg = SSLang.format( msg, "amount", Double.toString( amount ) );
+				setStatus( color_green, msg );
 
 				updateFunds();
 			} catch ( NumberFormatException nfe ) {
@@ -133,34 +139,38 @@ public class ShopVaultPopup
 				double amount = Double.parseDouble( txt_withdraw.getText() );
 				amount = Double.parseDouble( format.format( amount ) );
 
-				if ( amount < 0 ) {
-					setError( "Please use deposit instead." );
-					return;
-				}
+				if ( amount < 1 )
+					throw new NumberFormatException();
 
 				if ( shop.hasInfiniteWealth() ) {
-					setError( "The shop needs to not be in infinite wealth mode to do this." );
+					setError( SSLang.lookup( player, "err_svp_infinitecash" ) );
 					return;
 				}
 
 				if ( shop.shop_vault < amount ) {
-					setError( "The shop does not have enough funds to support this transaction." );
+					setError( SSLang.lookup( player, "err_svp_notenoughvault" ) );
 					return;
 				}
 
 				EconomyResponse response = economy.depositPlayer( player.getName(), amount );
 
-				if ( response.transactionSuccess() ) {
-					shop.shop_vault -= amount;
-					setStatus( color_green, "You have withdrawn $" + amount + " from the shop." );
-					updateFunds();
-				} else {
+				if ( !response.transactionSuccess() ) {
 					setError( response.errorMessage );
+					return;
 				}
 
+				shop.shop_vault -= amount;
+
+				String msg = SSLang.lookup( player, "suc_svp_withdraw" );
+				msg = SSLang.format( msg, "amount", Double.toString( amount ) );
+				setStatus( color_green, msg );
+
+				updateFunds();
 			} catch ( NumberFormatException nfe ) {
-				setError( "Please enter only a number." );
+				setError( SSLang.lookup( player, "err_not_number" ) );
 			}
+
+			return;
 		}
 
 		if ( button.equals( btn_deposit ) ) {
@@ -168,28 +178,33 @@ public class ShopVaultPopup
 				double amount = Double.parseDouble( txt_deposit.getText() );
 				amount = Double.parseDouble( format.format( amount ) );
 
-				if ( amount < 0 ) {
-					setError( "Please use withdraw instead." );
-					return;
-				}
+				if ( amount < 1 )
+					throw new NumberFormatException();
 
 				if ( shop.hasInfiniteWealth() ) {
-					setError( "The shop needs to not be in infinite wealth mode to do this." );
+					setError( SSLang.lookup( player, "err_svp_infinitecash" ) );
 					return;
 				}
 
 				EconomyResponse response = economy.withdrawPlayer( player.getName(), amount );
 
-				if ( response.transactionSuccess() ) {
-					shop.shop_vault += amount;
-					setStatus( color_green, "You have deposited $" + amount + " into the shop." );
-					updateFunds();
-				} else {
+				if ( !response.transactionSuccess() ) {
 					setError( response.errorMessage );
+					return;
 				}
+
+				shop.shop_vault += amount;
+
+				String msg = SSLang.lookup( player, "suc_svp_deposit" );
+				msg = SSLang.format( msg, "amount", Double.toString( amount ) );
+				setStatus( color_green, msg );
+
+				updateFunds();
 			} catch ( NumberFormatException nfe ) {
-				setError( "Please enter only a number." );
+				setError( SSLang.lookup( player, "err_not_number" ) );
 			}
+
+			return;
 		}
 
 		super.onButtonClick( bce );

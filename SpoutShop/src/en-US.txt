@@ -1,0 +1,150 @@
+#version: 1.09
+#lang: en-US
+
+# Except for the first two lines, a line starting with # is a comment, blank lines are also ignored.
+
+# Words encased in percent signs (%) are handled by the plugin, be aware when editing them
+# Example:
+# 	suc_saip_add: A total of %amount% items have been added.
+# would be formatted to something like:
+# 	A total of 4 items have been added.
+
+# $n indicates a new line, useful for tooltips
+
+# Non-GUI messages
+suc_shopcreated: Your shop has been created, right click it for access.
+err_nodestroy_perm: You do not have permission to destroy shops.
+err_nocreate_perm: You do not have permission to create shops.
+err_notowner: You are not an owner of this shop.
+err_conflicting: Conflicting shops surrounding this block.
+
+# Used by all shop windows
+manager_button: Manager
+buy_button: Buy
+sell_button: Sell
+lbl_funds: Cash: $%amount%
+lbl_vault: Shop: $%amount%
+
+# Used by various popups
+btn_next: Next
+btn_prev: Previous
+btn_search: Search
+txt_search: Quick Search
+err_shop_empty: It seems this shop is empty.
+err_shop_buy_empty: There is nothing for sale here.
+err_shop_sell_empty: There is nothing being bought here.
+err_search_none: Nothing matched your search terms.
+err_not_number: Please enter only a positive number.
+err_search_empty: Please enter a search term first.
+
+# Quantity terms
+term_infinite_stock: Infinite Stock
+term_infinite_demand: Infinite Demand
+term_units: %amount% Units
+term_units_ex: <9999 Units
+term_per_unit: /unit
+term_infinite: Infinite
+
+# ShopModifyItemPopup
+lbl_smip_title: Shop: Modify Item
+lbl_smip_instock: In Stock: %amount%
+lbl_smip_modstock: Modify$nStock
+lbl_smip_setamount_tt: The number of units in stock.$n-1 means infinite stock.
+btn_smip_updatestock: Update
+btn_smip_updatedemand: Update
+btn_smip_updatebuyprice: Update
+btn_smip_updatesellprice: Update
+btn_smip_remove: Remove
+btn_smip_delete: Delete
+lbl_smip_buying: Buying
+lbl_smip_buying_tt: The number of units you are wanting to buy from players.$n-1 is always buying.
+lbl_smip_buyprice: Store$nPrice
+lbl_smip_buyprice_tt: The cost the player must pay per unit of this item.$n<0 will stop selling the item.
+lbl_smip_sellprice: Purchase$nPrice
+lbl_smip_sellprice_tt: The cost the store will pay per unit of this item.$n<0 will stop buying the item.
+lbl_nfs: Not for Sale
+lbl_remove: Remove$nItems
+#	Success
+suc_smip_infinitestock: Infinite Stock Activated.
+suc_smip_setamount: Stock set to %amount%.
+suc_smip_delete: Entry Deleted
+suc_smip_infinitedemand: Infinite Demand Activated.
+suc_smip_stopbuying: You are no longer buying this item.
+suc_smip_updatebuying: Now buying %amount% units.
+suc_smip_stopselling: You are no longer selling this item.
+suc_smip_updatebuyprice: Now buying at $%amount%/unit.
+suc_smip_updatesellprice: Now selling at $%amount%/unit.
+suc_smip_removed: %amount% units have been removed.
+#	Errors
+err_smip_infinitestock: Please disable infinite stock to use this.
+err_smip_notenoughtoremove: There are not enough units in stock.
+
+# ShopManageOwnersPopup
+lbl_smop_title: Shop: Manage Owners
+btn_smop_add: Add
+txt_smop_add: Add Owner
+btn_smop_remove: Remove
+lbl_smop_self: Self
+#	Success
+suc_smop_removed: Removed
+suc_smop_added: They are now an owner.
+#	Errors
+err_smop_noname: Please enter a name first.
+err_smop_alreadyowner: They are already an owner.
+
+# ShopVaultPopup
+lbl_svp_title: Shop: Vault
+lbl_svp_setfunds: Set$nFunds
+btn_svp_setfunds: Update
+btn_svp_withdraw: Withdraw
+btn_svp_deposit: Deposit
+#	Success
+suc_svp_infinite_funds: Infinite Funds Activated
+suc_svp_setfunds: Shop funds set to $%amount%.
+suc_svp_withdraw: You have withdrawn $%amount% from the shop.
+#	Errors
+err_svp_infinitecash: Take the shop out of infinite wealth mode first.
+err_svp_notenoughvault: The shop does not have enough funds to support this transaction.
+
+# ShopManagerPopup
+lbl_manager_title: Shop: Manager
+btn_smp_lookupitem: Lookup Items
+btn_smp_additem: Add Items
+btn_smp_accessfunds: Access Funds
+btn_smp_managerowners: Manage Owners
+
+
+# ShopBuyPopup
+lbl_sbp_title: Shop: Buy Items
+btn_sbp_buy: Buy
+#	Success
+suc_sbp_spent: You spent $%cost% in that transaction.
+#	Errors
+err_sbp_notenoughavail: There are not that many for sale.
+err_sbp_notenoughcash: You do not have enough to afford that amount.
+
+#ShopSellPopup
+lbl_ssp_title: Shop: Sell Items
+btn_ssp_sell: Sell
+#	Success
+suc_ssp_earned: You earned $%cost% in that transaction.
+#	Errors
+err_ssp_notenoughwanted: There are not that many wanted.
+err_ssp_notenoughtobuy: The shop does not have enough funds to complete that transaction.
+err_ssp_notenoughtosell: You do not have enough to sell to the shop.
+
+# ShopLookupItemPopup
+lbl_slip_title: Shop: Lookup
+btn_slip_modify: Modify
+#	Errors
+err_saip_search_empty: Please enter a search term first.
+
+# ShopAddItemPopup
+lbl_saip_title: Shop: Add Items
+txt_saip_itemname_placeholder: Enter item name here.
+txt_saip_amount_placeholder: Enter item amount here.
+btn_saip_add: Add
+btn_saip_dump: Add All
+#	Success
+suc_saip_add: A total of %amount% items have been added.
+suc_saip_dump: Your inventory has been dumped into the store.

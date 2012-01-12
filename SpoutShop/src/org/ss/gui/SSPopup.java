@@ -24,7 +24,7 @@ public class SSPopup
 		label.setAnchor( WidgetAnchor.TOP_LEFT );
 		label.setX( 10 );
 		label.setY( 10 );
-		label.setWidth( str_label.length() * 5 );
+		label.setWidth( 100 );
 		label.setHeight( 10 );
 
 		status = new GenericLabel( "" );

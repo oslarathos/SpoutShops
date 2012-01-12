@@ -21,13 +21,17 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.inventory.SpoutShapedRecipe;
 import org.getspout.spoutapi.material.MaterialData;
+import org.ss.extend.MinecraftCurrencyEconomy;
+import org.ss.gui.ShopPopup;
 import org.ss.listeners.SSBlockListener;
 import org.ss.listeners.SSPlayerListener;
 import org.ss.listeners.SSScreenListener;
+import org.ss.other.SSLang;
 import org.ss.spout.ShopCounter;
 
 public class SpoutShopPlugin
-		extends JavaPlugin {
+		extends JavaPlugin
+		implements Runnable {
 
 	private static final Logger logger = Logger.getLogger( "SpoutShops" );
 
@@ -46,6 +50,7 @@ public class SpoutShopPlugin
 	}
 
 	private Economy vault_economy;
+	private Thread shutdown_thread = new Thread( this );
 
 	@Override
 	public void onDisable() {
@@ -54,6 +59,8 @@ public class SpoutShopPlugin
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
+
+		Runtime.getRuntime().removeShutdownHook( shutdown_thread );
 
 		log( Level.INFO, "Version " + getDescription().getVersion() + " disabled." );
 	}
@@ -64,6 +71,12 @@ public class SpoutShopPlugin
 
 		if ( !getDataFolder().exists() )
 			getDataFolder().mkdir();
+
+		// Registering the shutdown thread
+		Runtime.getRuntime().addShutdownHook( shutdown_thread );
+
+		// Setting up languages
+		SSLang.startup();
 
 		// Reading the configuration
 		try {
@@ -138,6 +151,11 @@ public class SpoutShopPlugin
 			vault_economy = economy.getProvider();
 
 			log( "Vault economy linked: " + vault_economy.getName() );
+		} else if ( getServer().getPluginManager().isPluginEnabled( "MinecraftCurrency" ) ) {
+			vault_economy = new MinecraftCurrencyEconomy();
+			ShopPopup.format.applyPattern( "#.#" );
+
+			log( "Using custom provider for MinecraftCurrency by Perdog" );
 		} else {
 			log( Level.SEVERE, "Vault economy not found, aborting." );
 			getPluginLoader().disablePlugin( this );
@@ -166,4 +184,13 @@ public class SpoutShopPlugin
 		return vault_economy;
 	}
 
+	public void run() {
+		log( "Emergency shutdown thread started." );
+
+		try {
+			SSBlockListener.getInstance().saveAllShops();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+	}
 }

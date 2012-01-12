@@ -11,6 +11,7 @@ import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.GenericTextField;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.ss.other.SSLang;
 import org.ss.shop.Shop;
 
 public class ShopManageOwnersPopup
@@ -24,20 +25,20 @@ public class ShopManageOwnersPopup
 	private ArrayList< String > managers = new ArrayList< String >();
 	private ArrayList< GenericButton > remove_buttons = new ArrayList< GenericButton >();
 
-	private GenericButton btn_prev = new GenericButton( "Previous" );
-	private GenericButton btn_next = new GenericButton( "Next" );
+	private GenericButton btn_prev = new GenericButton();
+	private GenericButton btn_next = new GenericButton();
 	private GenericTextField txt_search = new GenericTextField();
-	private GenericButton btn_search = new GenericButton( "Search" );
+	private GenericButton btn_search = new GenericButton();
 
 	private GenericTextField txt_add = new GenericTextField();
-	private GenericButton btn_add = new GenericButton( "Add" );
+	private GenericButton btn_add = new GenericButton();
 
 	public ShopManageOwnersPopup( SpoutPlayer p, Shop s ) {
 		this( p, s, 0, true, null );
 	}
 
 	public ShopManageOwnersPopup( SpoutPlayer p, Shop s, int p_scan_index, boolean p_forward_scan, String p_search ) {
-		super( "Owners", p, s );
+		super( SSLang.lookup( p, "lbl_smop_title" ), p, s );
 
 		if ( !shop.isManager( player ) ) {
 			close();
@@ -54,6 +55,7 @@ public class ShopManageOwnersPopup
 		btn_prev.setWidth( 80 );
 		btn_prev.setHeight( 20 );
 		btn_prev.setEnabled( false );
+		btn_prev.setText( SSLang.lookup( player, "btn_prev" ) );
 
 		btn_next.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_next.setX( SCREEN_WIDTH - 90 );
@@ -61,6 +63,7 @@ public class ShopManageOwnersPopup
 		btn_next.setWidth( 80 );
 		btn_next.setHeight( 20 );
 		btn_next.setEnabled( false );
+		btn_next.setText( SSLang.lookup( player, "btn_next" ) );
 
 		txt_search.setAnchor( WidgetAnchor.TOP_LEFT );
 		txt_search.setX( 80 );
@@ -70,26 +73,28 @@ public class ShopManageOwnersPopup
 		if ( p_search != null )
 			txt_search.setText( p_search );
 		else
-			txt_search.setPlaceholder( "Quick Search" );
+			txt_search.setPlaceholder( SSLang.lookup( player, "txt_search" ) );
 
 		btn_search.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_search.setX( SCREEN_WIDTH - 180 );
 		btn_search.setY( SCREEN_HEIGHT - 35 );
 		btn_search.setWidth( 80 );
 		btn_search.setHeight( 20 );
+		btn_search.setText( SSLang.lookup( player, "btn_search" ) );
 
 		txt_add.setAnchor( WidgetAnchor.TOP_LEFT );
 		txt_add.setX( 80 );
 		txt_add.setY( SCREEN_HEIGHT - 65 );
 		txt_add.setWidth( 160 );
 		txt_add.setHeight( 20 );
-		txt_add.setPlaceholder( "Add Owner" );
+		txt_add.setPlaceholder( SSLang.lookup( player, "btn_smop_add" ) );
 
 		btn_add.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_add.setX( SCREEN_WIDTH - 180 );
 		btn_add.setY( SCREEN_HEIGHT - 65 );
 		btn_add.setWidth( 80 );
 		btn_add.setHeight( 20 );
+		btn_add.setText( SSLang.lookup( player, "btn_smop_add" ) );
 
 		attachWidgets( btn_prev, btn_next, txt_search, btn_search, txt_add, btn_add );
 
@@ -133,7 +138,7 @@ public class ShopManageOwnersPopup
 			lbl_manager.setWidth( lbl_manager.getText().length() * 5 );
 			lbl_manager.setHeight( 10 );
 
-			GenericButton btn_remove = new GenericButton( "Remove" );
+			GenericButton btn_remove = new GenericButton( SSLang.lookup( player, "btn_smop_remove" ) );
 			btn_remove.setAnchor( WidgetAnchor.TOP_LEFT );
 			btn_remove.setX( SCREEN_WIDTH - 180 );
 			btn_remove.setY( y_start );
@@ -142,7 +147,7 @@ public class ShopManageOwnersPopup
 
 			if ( manager.equalsIgnoreCase( player.getName() ) ) {
 				btn_remove.setEnabled( false );
-				btn_remove.setText( "Self" );
+				btn_remove.setText( SSLang.lookup( player, "lbl_smop_self" ) );
 			}
 
 			remove_buttons.add( btn_remove );
@@ -171,7 +176,7 @@ public class ShopManageOwnersPopup
 			if ( txt_search.getText() != null )
 				new ShopManageOwnersPopup( player, shop, 0, true, txt_search.getText().toLowerCase() ).show();
 			else
-				setError( "Please enter a search term first." );
+				setError( SSLang.lookup( player, "err_search_empty" ) );
 
 			return;
 		}
@@ -180,18 +185,19 @@ public class ShopManageOwnersPopup
 			String name = txt_add.getText();
 
 			if ( name == null || name.length() == 0 ) {
-				setError( "Please enter a name first." );
+				setError( SSLang.lookup( player, "err_smop_noname" ) );
 				return;
 			}
 
 			if ( shop.owners.contains( name.toLowerCase() ) ) {
-				setError( "They are already an owner." );
-				return;
-			} else {
-				shop.owners.add( name.toLowerCase() );
-				setStatus( color_green, "They are now an owner." );
+				setError( SSLang.lookup( player, "err_smop_alreadyowner" ) );
 				return;
 			}
+
+			shop.owners.add( name.toLowerCase() );
+			setStatus( color_green, SSLang.lookup( player, "suc_smop_added" ) );
+
+			return;
 		}
 
 		if ( button.equals( btn_prev ) ) {
@@ -211,7 +217,7 @@ public class ShopManageOwnersPopup
 				shop.owners.remove( managers.get( index ) );
 
 				button.setEnabled( false );
-				button.setText( "Removed" );
+				button.setText( SSLang.lookup( player, "suc_smop_removed" ) );
 
 				return;
 			}

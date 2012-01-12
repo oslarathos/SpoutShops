@@ -27,7 +27,7 @@ public class ShopEntry
 	public ShopEntry( ItemStack stack ) {
 		SpoutItemStack sis = new SpoutItemStack( stack );
 
-		unit_name = sis.getMaterial().getNotchianName();
+		unit_name = sis.getMaterial().getName();
 		unit_durability = stack.getDurability();
 		unit_data = stack.getData().getData();
 

@@ -28,6 +28,7 @@ import org.bukkit.plugin.PluginManager;
 import org.getspout.spoutapi.block.SpoutBlock;
 import org.ss.SpoutShopPermissions;
 import org.ss.SpoutShopPlugin;
+import org.ss.other.SSLang;
 import org.ss.serial.Coordinate;
 import org.ss.shop.Shop;
 import org.ss.shop.ShopEntry;
@@ -168,12 +169,13 @@ public class SSBlockListener
 		Player player = event.getPlayer();
 
 		if ( !SpoutShopPermissions.checkPermission( player, SpoutShopPermissions.DESTROY, SpoutShopPermissions.ADMIN ) ) {
-			player.sendMessage( "You do not have permission to destroy shops." );
+			player.sendMessage( SSLang.lookup( player, "err_nodestroy_perm" ) );
 			event.setCancelled( true );
+			return;
 		}
 
 		if ( !shop.isManager( player ) && !SpoutShopPermissions.ADMIN.hasNode( player ) ) {
-			player.sendMessage( "This is not your shop to destroy." );
+			player.sendMessage( SSLang.lookup( player, "err_nodestroy" ) );
 			event.setCancelled( true );
 			return;
 		}
@@ -201,15 +203,13 @@ public class SSBlockListener
 					Economy econ = SpoutShopPlugin.getInstance().getVaultEconomy();
 
 					econ.depositPlayer( player.getName(), shop.shop_vault );
-					player.sendMessage( ChatColor.GREEN + "[SpoutShops] " + ChatColor.WHITE + "$" + shop.shop_vault
-							+ " deposited." );
+					player.sendMessage( ChatColor.GREEN + "[SpoutShops] " + ChatColor.WHITE + "+$" + shop.shop_vault );
 				}
 			}
 
 			// Deleting the shop's save file.
 			File shop_file = new File( folder, shop.shop_uuid.toString() );
 			shop_file.delete();
-
 		}
 	}
 
@@ -253,7 +253,7 @@ public class SSBlockListener
 
 					if ( nearby_shops.size() > 1 ) {
 						player.sendMessage( ChatColor.GREEN + "[SpoutShops] " + ChatColor.WHITE
-								+ "Conflicting shops surrounding this block." );
+								+ SSLang.lookup( player, "err_conflicting" ) );
 						event.setCancelled( true );
 						return;
 					}
@@ -264,19 +264,20 @@ public class SSBlockListener
 						shop = nearby_shops.get( 0 );
 
 						if ( !shop.isManager( player ) ) {
-							player.sendMessage( "You are not an owner and cannot extend that shop." );
+							player.sendMessage( SSLang.lookup( player, "err_notowner" ) );
 							event.setCancelled( true );
 							return;
 						}
 					} else {
 						if ( !SpoutShopPermissions.CREATE.hasNode( player ) ) {
-							player.sendMessage( "You do not have permission to create a shop." );
+							player.sendMessage( SSLang.lookup( player, "err_nocreate_perm" ) );
 							event.setCancelled( true );
 							return;
 						}
 
 						shop = new Shop();
 						shop.addOwner( event.getPlayer().getName() );
+						player.sendMessage( SSLang.lookup( player, "suc_shopcreated" ) );
 					}
 
 					Coordinate coord = new Coordinate( event.getBlock() );
@@ -295,7 +296,7 @@ public class SSBlockListener
 		Player player = event.getPlayer();
 
 		if ( !SpoutShopPermissions.CREATE.hasNode( player ) ) {
-			player.sendMessage( "You do not have permission to create a shop." );
+			player.sendMessage( SSLang.lookup( player, "err_nocreate_perm" ) );
 			event.setCancelled( true );
 			return;
 		}
@@ -305,6 +306,6 @@ public class SSBlockListener
 		shop.addOwner( event.getPlayer().getName() );
 		shop_coord_roster.put( coord, shop );
 		System.out.println( coord.toString() );
-		player.sendMessage( "Your shop has been created, right click the sign to access it." );
+		player.sendMessage( SSLang.lookup( player, "suc_shopcreated" ) );
 	}
 }

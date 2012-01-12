@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -19,8 +19,8 @@ import org.getspout.spoutapi.gui.GenericTextField;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.player.SpoutPlayer;
-import org.ss.SpoutShopPlugin;
 import org.ss.other.SSEnchantment;
+import org.ss.other.SSLang;
 import org.ss.other.SSPotion;
 import org.ss.shop.Shop;
 import org.ss.shop.ShopEntry;
@@ -33,10 +33,10 @@ public class ShopSellPopup
 	private int scan_index;
 	private String search;
 
-	private GenericButton btn_prev = new GenericButton( "Previous" );
-	private GenericButton btn_next = new GenericButton( "Next" );
+	private GenericButton btn_prev = new GenericButton();
+	private GenericButton btn_next = new GenericButton();
 	private GenericTextField txt_search = new GenericTextField();
-	private GenericButton btn_search = new GenericButton( "Search" );
+	private GenericButton btn_search = new GenericButton();
 
 	private ArrayList< ShopEntry > shop_entries = new ArrayList< ShopEntry >();
 	private ArrayList< GenericTextField > sell_amounts = new ArrayList< GenericTextField >();
@@ -52,7 +52,7 @@ public class ShopSellPopup
 	}
 
 	public ShopSellPopup( SpoutPlayer p, Shop s, int p_scan_index, boolean p_forward_scan, String p_search ) {
-		super( "Shop: Sell Items", p, s );
+		super( SSLang.lookup( p, "lbl_ssp_title" ), p, s );
 
 		this.forward_scan = p_forward_scan;
 		this.scan_index = p_scan_index;
@@ -66,6 +66,7 @@ public class ShopSellPopup
 		btn_prev.setWidth( 80 );
 		btn_prev.setHeight( 20 );
 		btn_prev.setEnabled( false );
+		btn_prev.setText( SSLang.lookup( player, "btn_prev" ) );
 
 		btn_next.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_next.setX( SCREEN_WIDTH - 90 );
@@ -73,6 +74,7 @@ public class ShopSellPopup
 		btn_next.setWidth( 80 );
 		btn_next.setHeight( 20 );
 		btn_next.setEnabled( false );
+		btn_next.setText( SSLang.lookup( player, "btn_next" ) );
 
 		txt_search.setAnchor( WidgetAnchor.TOP_LEFT );
 		txt_search.setX( 80 );
@@ -82,18 +84,19 @@ public class ShopSellPopup
 		if ( p_search != null )
 			txt_search.setText( p_search );
 		else
-			txt_search.setPlaceholder( "Quick Search" );
+			txt_search.setPlaceholder( SSLang.lookup( player, "txt_search" ) );
 
 		btn_search.setAnchor( WidgetAnchor.TOP_LEFT );
 		btn_search.setX( SCREEN_WIDTH - 90 );
 		btn_search.setY( SCREEN_HEIGHT - 45 );
 		btn_search.setWidth( 80 );
 		btn_search.setHeight( 20 );
+		btn_search.setText( SSLang.lookup( player, "btn_search" ) );
 
 		attachWidgets( btn_prev, btn_next, txt_search, btn_search );
 
 		if ( s.shop_entries.size() == 0 ) {
-			setStatus( color_red, "It seems this shop is empty." );
+			setStatus( color_red, SSLang.lookup( player, "err_shop_empty" ) );
 			return;
 		}
 
@@ -164,8 +167,7 @@ public class ShopSellPopup
 
 				if ( enchantments.size() != 0 ) {
 					for ( Enchantment enc : enchantments.keySet() ) {
-						builder.append( "\n" + SSEnchantment.lookup( enc.getId() ) + ": Level "
-								+ enchantments.get( enc ) );
+						builder.append( "\n" + SSEnchantment.lookup( enc.getId() ) + ": LvL " + enchantments.get( enc ) );
 					}
 				}
 			}
@@ -173,13 +175,18 @@ public class ShopSellPopup
 			display.setTooltip( builder.toString() );
 
 			GenericLabel lbl_qty = new GenericLabel();
-			if ( entry.hasInfiniteDemand() )
-				lbl_qty.setText( "Always Buying" );
+			if ( entry.hasInfiniteStock() )
+				lbl_qty.setText( SSLang.lookup( player, "term_infinite_demand" ) );
 			else {
-				if ( entry.units_wanted < 10000 )
-					lbl_qty.setText( Integer.toString( entry.units_wanted ) + " Units" );
-				else
-					lbl_qty.setText( "<9999 Units" );
+				String msg;
+
+				if ( entry.units_in_stock < 10000 ) {
+					msg = SSLang.lookup( player, "term_units" );
+					msg = SSLang.format( msg, "amount", Integer.toString( entry.units_wanted ) );
+				} else
+					msg = SSLang.lookup( player, "term_units_ex" );
+
+				lbl_qty.setText( msg );
 			}
 
 			lbl_qty.setDirty( true );
@@ -190,7 +197,8 @@ public class ShopSellPopup
 			lbl_qty.setHeight( 10 );
 			sell_avail.add( lbl_qty );
 
-			GenericLabel lbl_cost = new GenericLabel( "$" + entry.cost_to_sell_unit + "/unit" );
+			GenericLabel lbl_cost = new GenericLabel( "$" + entry.cost_to_sell_unit + " "
+					+ SSLang.lookup( player, "term_per_unit" ) );
 			lbl_cost.setAnchor( WidgetAnchor.TOP_LEFT );
 			lbl_cost.setX( 130 );
 			lbl_cost.setY( y_start + 10 );
@@ -207,7 +215,7 @@ public class ShopSellPopup
 			txt_amount.setPlaceholder( "# to sell" );
 			sell_amounts.add( txt_amount );
 
-			GenericButton btn_sell = new GenericButton( "Sell" );
+			GenericButton btn_sell = new GenericButton( SSLang.lookup( player, "btn_ssp_sell" ) );
 			btn_sell.setAnchor( WidgetAnchor.TOP_LEFT );
 			btn_sell.setX( SCREEN_WIDTH - 140 );
 			btn_sell.setY( y_start );
@@ -220,9 +228,9 @@ public class ShopSellPopup
 
 		if ( found_entries == 0 ) {
 			if ( p_search != null )
-				setStatus( color_red, "Nothing matched your search terms." );
+				setStatus( color_red, SSLang.lookup( player, "err_search_none" ) );
 			else
-				setStatus( color_red, "Nothing is being bought here." );
+				setStatus( color_red, SSLang.lookup( player, "err_shop_sell_empty" ) );
 		}
 
 		if ( forward_scan ) {
@@ -263,21 +271,11 @@ public class ShopSellPopup
 	public void onButtonClick( ButtonClickEvent bce ) {
 		Button button = bce.getButton();
 
-		// if ( button.equals( btn_next ) ) {
-		// new ShopSellPopup( player, shop, ( forward_scan ? range_end :
-		// range_start ) + 1, true, search ).show();
-		// return;
-		// }
 		if ( button.equals( btn_next ) ) {
 			new ShopSellPopup( player, shop, ( forward_scan ? range_end : range_start ) + 1, true, search ).show();
 			return;
 		}
 
-		// if ( button.equals( btn_prev ) ) {
-		// new ShopSellPopup( player, shop, ( forward_scan ? range_start :
-		// range_end ) - 1, false, search ).show();
-		// return;
-		// }
 		if ( button.equals( btn_prev ) ) {
 			new ShopSellPopup( player, shop, ( forward_scan ? range_start : range_end ) - 1, false, search ).show();
 			return;
@@ -292,64 +290,69 @@ public class ShopSellPopup
 			if ( !button.equals( sell_buttons.get( index ) ) )
 				continue;
 
-			int amount = -1;
 			try {
-				amount = Integer.parseInt( sell_amounts.get( index ).getText() );
+				Integer amount_to_sell = Integer.parseInt( sell_amounts.get( index ).getText() );
 
-				if ( amount < 1 )
+				if ( amount_to_sell < 1 )
 					throw new NumberFormatException();
-			} catch ( NumberFormatException e ) {
-				setError( "Please enter only a positive number." );
+
+				ShopEntry entry = shop_entries.get( index );
+
+				if ( !entry.hasInfiniteDemand() && amount_to_sell > entry.units_wanted ) {
+					setError( SSLang.lookup( player, "err_ssp_notenoughwanted" ) );
+					return;
+				}
+
+				double cost_to_sell = amount_to_sell * entry.cost_to_sell_unit;
+
+				if ( !shop.hasInfiniteWealth() && cost_to_sell > shop.shop_vault ) {
+					setError( SSLang.lookup( player, "err_ssp_notenoughtobuy" ) );
+					return;
+				}
+
+				ItemStack stack = entry.createItemStack();
+				stack.setAmount( amount_to_sell );
+
+				if ( player.getInventory().removeItem( stack ).size() != 0 ) {
+					setError( SSLang.lookup( player, "err_ssp_notenoughtosell" ) );
+					return;
+				}
+
+				EconomyResponse response = economy.depositPlayer( player.getName(), cost_to_sell );
+
+				if ( !response.transactionSuccess() ) {
+					setError( response.errorMessage );
+					return;
+				}
+
+				if ( !shop.hasInfiniteWealth() )
+					shop.shop_vault -= cost_to_sell;
+
+				if ( !entry.hasInfiniteDemand() )
+					entry.units_wanted -= amount_to_sell;
+
+				if ( !entry.hasInfiniteStock() )
+					entry.units_in_stock += amount_to_sell;
+
+				updateFunds();
+
+				if ( entry.units_in_stock < 10000 ) {
+					String msg = SSLang.lookup( player, "term_units" );
+					msg = SSLang.format( msg, "amount", Integer.toString( entry.units_wanted ) );
+					sell_avail.get( index ).setText( msg );
+				} else {
+					sell_avail.get( index ).setText( SSLang.lookup( player, "term_units_ex" ) );
+				}
+
+				String msg = SSLang.lookup( player, "suc_ssp_earned" );
+				msg = SSLang.format( msg, "cost", Double.toString( cost_to_sell ) );
+				setStatus( color_green, msg );
+
+				return;
+			} catch ( NumberFormatException nfe ) {
+				setError( SSLang.lookup( player, "err_not_number" ) );
 				return;
 			}
-
-			ShopEntry entry = shop_entries.get( index );
-			ItemStack stack = entry.createItemStack();
-			stack.setAmount( amount );
-
-			if ( !entry.hasInfiniteDemand() && amount > entry.units_wanted ) {
-				setError( "The shop is not buying that many units." );
-				return;
-			}
-
-			if ( !shop.hasInfiniteWealth() && amount * entry.cost_to_sell_unit > shop.shop_vault ) {
-				setError( "The shop does not have enough wealth to complete that transaction." );
-				return;
-			}
-
-			if ( player.getInventory().removeItem( stack ).size() != 0 ) {
-				setError( "You do not have that many to sell." );
-				return;
-			}
-
-			if ( !entry.hasInfiniteDemand() ) {
-				entry.units_wanted -= amount;
-
-				String avail;
-
-				if ( entry.units_wanted < 10000 )
-					avail = Integer.toString( entry.units_wanted ) + " Units";
-				else
-					avail = "<9999 Units";
-
-				sell_avail.get( index ).setText( avail );
-			}
-
-			if ( !entry.hasInfiniteStock() )
-				entry.units_in_stock += amount;
-
-			if ( !shop.hasInfiniteWealth() )
-				shop.shop_vault -= amount * entry.cost_to_sell_unit;
-
-			double earnings = entry.cost_to_sell_unit * amount;
-
-			Economy economy = SpoutShopPlugin.getInstance().getVaultEconomy();
-			economy.depositPlayer( player.getName(), earnings );
-
-			setStatus( color_green, "You earned $" + earnings + " in that transaction." );
-			updateFunds();
-
-			return;
 		}
 
 		super.onButtonClick( bce );

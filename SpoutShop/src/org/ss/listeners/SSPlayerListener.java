@@ -5,6 +5,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.PluginManager;
 import org.getspout.spoutapi.SpoutManager;
@@ -28,6 +29,7 @@ public class SSPlayerListener
 		PluginManager manager = plugin.getServer().getPluginManager();
 
 		manager.registerEvent( Type.PLAYER_INTERACT, instance, Priority.Normal, plugin );
+		manager.registerEvent( Type.PLAYER_JOIN, instance, Priority.Normal, plugin );
 	}
 
 	public void onPlayerInteract( PlayerInteractEvent event ) {
@@ -58,5 +60,9 @@ public class SSPlayerListener
 			new ShopManagerPopup( player, shop ).show();
 		else
 			new ShopBuyPopup( player, shop ).show();
+	}
+
+	public void onPlayerJoin( PlayerJoinEvent pje ) {
+
 	}
 }
